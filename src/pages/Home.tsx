@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import PasteArea from '../components/paste/PasteArea';
+import ImageDrop from '../components/paste/ImageDrop';
 import RoomCard from '../components/room/RoomCard';
 import ClipFeed from '../components/clips/ClipFeed';
 import { useRoom } from '../hooks/useRoom';
@@ -9,7 +10,7 @@ import { useAnonAuth } from '../hooks/useAnonAuth';
 
 export default function Home() {
   useAnonAuth();
-  const { room, clips, sendText } = useRoom();
+  const { room, clips, sendText, sendImage } = useRoom();
   const [joinCode, setJoinCode] = useState('');
   const navigate = useNavigate();
 
@@ -60,9 +61,11 @@ export default function Home() {
           <div style={{ borderTop: '0.5px solid var(--border-subtle)' }} />
 
           {/* paste-card */}
-          <PasteArea onSend={sendText} live={!!room} />
+          <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
 
-          {/* feed (Phase 1: show clips under paste area) */}
+          {/* image-drop */}
+          <ImageDrop onImage={sendImage} />
+
           <ClipFeed clips={clips} />
         </section>
 

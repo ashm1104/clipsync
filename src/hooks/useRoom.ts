@@ -3,6 +3,8 @@ import { supabase } from '../lib/supabase';
 import { createUniqueSlug } from '../lib/slug';
 import { detectType, detectLanguage, type ClipType } from '../lib/contentDetector';
 import { setCurrentRoomSlug } from '../lib/localStorage';
+import { uploadImageToRoom } from '../lib/storage';
+import { fetchOg } from '../lib/og';
 
 export type Clip = {
   id: string;
@@ -26,7 +28,7 @@ export type Room = {
   created_at: string;
 };
 
-const ANON_TTL_MS = 24 * 60 * 60 * 1000; // 24h default for rooms; timer in Phase 3 uses 4h for anon local
+const ANON_TTL_MS = 24 * 60 * 60 * 1000;
 
 export function useRoom(initialSlug?: string) {
   const [room, setRoom] = useState<Room | null>(null);
@@ -60,7 +62,6 @@ export function useRoom(initialSlug?: string) {
     }
   }, [initialSlug, loadBySlug]);
 
-  // Realtime subscription
   useEffect(() => {
     if (!room) return;
     const channel = supabase
@@ -102,23 +103,48 @@ export function useRoom(initialSlug?: string) {
   }, [room]);
 
   const sendText = useCallback(
-    async (rawText: string, hasHtml: boolean) => {
+    async (rawText: string, hasHtml: boolean, htmlContent?: string) => {
       const text = rawText.trim();
       if (!text) return;
       const r = await ensureRoom();
       const type = detectType(text, hasHtml);
       const language = type === 'code' ? detectLanguage(text) : null;
+      const content = type === 'rich_text' && htmlContent ? htmlContent : text;
+
+      let og: { title: string | null; description: string | null; image: string | null } | null = null;
+      if (type === 'url') {
+        og = await fetchOg(text);
+      }
+
       const { error } = await supabase.from('clips').insert({
         room_id: r.id,
         type,
-        content: text,
+        content,
         language,
-        size_bytes: new Blob([text]).size,
+        og_title: og?.title ?? null,
+        og_desc: og?.description ?? null,
+        og_image: og?.image ?? null,
+        size_bytes: new Blob([content]).size,
       });
       if (error) throw error;
     },
     [ensureRoom]
   );
 
-  return { room, clips, loading, notFound, ensureRoom, sendText, loadBySlug };
+  const sendImage = useCallback(
+    async (file: File, onProgress?: (pct: number) => void) => {
+      const r = await ensureRoom();
+      const { path, size } = await uploadImageToRoom(file, r.id, onProgress);
+      const { error } = await supabase.from('clips').insert({
+        room_id: r.id,
+        type: 'image',
+        content: path,
+        size_bytes: size,
+      });
+      if (error) throw error;
+    },
+    [ensureRoom]
+  );
+
+  return { room, clips, loading, notFound, ensureRoom, sendText, sendImage, loadBySlug };
 }

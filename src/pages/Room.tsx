@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import RoomCard from '../components/room/RoomCard';
 import PasteArea from '../components/paste/PasteArea';
+import ImageDrop from '../components/paste/ImageDrop';
 import ClipFeed from '../components/clips/ClipFeed';
 import { useRoom } from '../hooks/useRoom';
 import { useAnonAuth } from '../hooks/useAnonAuth';
@@ -9,7 +10,7 @@ import { useAnonAuth } from '../hooks/useAnonAuth';
 export default function Room() {
   useAnonAuth();
   const { slug = '' } = useParams();
-  const { room, clips, loading, notFound, sendText } = useRoom(slug);
+  const { room, clips, loading, notFound, sendText, sendImage } = useRoom(slug);
 
   if (loading) {
     return (
@@ -70,7 +71,8 @@ export default function Room() {
             </span>
           </div>
           <ClipFeed clips={clips} emptyLabel="Waiting for the first clip…" />
-          <PasteArea onSend={sendText} live={!!room} />
+          <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
+          <ImageDrop onImage={sendImage} />
         </section>
 
         <aside className="flex flex-col gap-[18px]">

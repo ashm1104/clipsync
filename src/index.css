@@ -71,3 +71,13 @@ body {
   background: #639922;
   animation: breathe 2s ease-in-out infinite;
 }
+
+.tiptap-rich .ProseMirror { outline: none; }
+.tiptap-rich p { margin: 0 0 0.5em 0; }
+.tiptap-rich p:last-child { margin-bottom: 0; }
+.tiptap-rich h1, .tiptap-rich h2, .tiptap-rich h3 { font-weight: 500; margin: 0.5em 0 0.25em; }
+.tiptap-rich ul, .tiptap-rich ol { padding-left: 1.25em; margin: 0.25em 0; }
+.tiptap-rich a { color: var(--blue-text); text-decoration: underline; }
+.tiptap-rich code { font-family: 'DM Mono', ui-monospace, monospace; background: var(--bg-surface); padding: 1px 4px; border-radius: 3px; font-size: 0.9em; }
+.tiptap-rich pre { background: var(--bg-surface); padding: 10px 12px; border-radius: 8px; overflow-x: auto; font-family: 'DM Mono', ui-monospace, monospace; }
+.tiptap-rich blockquote { border-left: 2px solid var(--border-default); padding-left: 0.75em; color: var(--text-secondary); margin: 0.5em 0; }
