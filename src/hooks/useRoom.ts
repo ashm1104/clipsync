@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { createUniqueSlug } from '../lib/slug';
 import { detectType, detectLanguage, type ClipType } from '../lib/contentDetector';
-import { setCurrentRoomSlug } from '../lib/localStorage';
+import { setCurrentRoomSlug, addLocalClip } from '../lib/localStorage';
+import { useAppStore } from '../stores/appStore';
 import { uploadImageToRoom } from '../lib/storage';
 import { fetchOg } from '../lib/og';
 
@@ -116,17 +117,47 @@ export function useRoom(initialSlug?: string) {
         og = await fetchOg(text);
       }
 
-      const { error } = await supabase.from('clips').insert({
-        room_id: r.id,
-        type,
-        content,
-        language,
-        og_title: og?.title ?? null,
-        og_desc: og?.description ?? null,
-        og_image: og?.image ?? null,
-        size_bytes: new Blob([content]).size,
-      });
+      const { data, error } = await supabase
+        .from('clips')
+        .insert({
+          room_id: r.id,
+          type,
+          content,
+          language,
+          og_title: og?.title ?? null,
+          og_desc: og?.description ?? null,
+          og_image: og?.image ?? null,
+          size_bytes: new Blob([content]).size,
+        })
+        .select()
+        .single();
       if (error) throw error;
+      const state = useAppStore.getState();
+      if (state.isAnonymous && data) {
+        addLocalClip({
+          id: data.id,
+          roomSlug: r.slug,
+          type,
+          content,
+          language,
+          og_title: og?.title ?? null,
+          og_desc: og?.description ?? null,
+          og_image: og?.image ?? null,
+          size_bytes: data.size_bytes ?? null,
+          createdAt: new Date(data.created_at).getTime(),
+        });
+      } else if (!state.isAnonymous && state.userId && data) {
+        await supabase.from('personal_clips').insert({
+          user_id: state.userId,
+          type,
+          content,
+          language,
+          og_title: og?.title ?? null,
+          og_desc: og?.description ?? null,
+          og_image: og?.image ?? null,
+          size_bytes: data.size_bytes ?? null,
+        });
+      }
     },
     [ensureRoom]
   );
@@ -135,13 +166,27 @@ export function useRoom(initialSlug?: string) {
     async (file: File, onProgress?: (pct: number) => void) => {
       const r = await ensureRoom();
       const { path, size } = await uploadImageToRoom(file, r.id, onProgress);
-      const { error } = await supabase.from('clips').insert({
-        room_id: r.id,
-        type: 'image',
-        content: path,
-        size_bytes: size,
-      });
+      const { data, error } = await supabase
+        .from('clips')
+        .insert({
+          room_id: r.id,
+          type: 'image',
+          content: path,
+          size_bytes: size,
+        })
+        .select()
+        .single();
       if (error) throw error;
+      if (useAppStore.getState().isAnonymous && data) {
+        addLocalClip({
+          id: data.id,
+          roomSlug: r.slug,
+          type: 'image',
+          content: path,
+          size_bytes: size,
+          createdAt: new Date(data.created_at).getTime(),
+        });
+      }
     },
     [ensureRoom]
   );

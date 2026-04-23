@@ -1,6 +1,18 @@
 import { Link } from 'react-router-dom';
+import { useAppStore } from '../../stores/appStore';
+import { supabase } from '../../lib/supabase';
 
 export default function Navbar() {
+  const openSignIn = useAppStore((s) => s.openSignIn);
+  const isAnon = useAppStore((s) => s.isAnonymous);
+  const userId = useAppStore((s) => s.userId);
+  const pushToast = useAppStore((s) => s.pushToast);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    pushToast({ kind: 'info', title: 'Signed out' });
+  };
+
   return (
     <header
       className="w-full"
@@ -16,15 +28,31 @@ export default function Navbar() {
           </span>
         </Link>
         <nav className="flex items-center gap-2">
-          <button
-            type="button"
-            disabled
-            className="rounded-btn px-3 py-1.5 text-sm text-text-tertiary"
-            style={{ border: '0.5px solid var(--border-subtle)' }}
-            title="Sign-in arrives in Phase 3"
-          >
-            Sign in
-          </button>
+          {isAnon || !userId ? (
+            <button
+              type="button"
+              onClick={openSignIn}
+              className="rounded-btn px-3 py-1.5 text-sm font-medium text-white transition-colors"
+              style={{ background: '#3B6D11' }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#27500A')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '#3B6D11')}
+            >
+              Sign in
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="rounded-btn px-3 py-1.5 text-sm transition-colors"
+              style={{
+                background: 'var(--bg-surface)',
+                border: '0.5px solid var(--border-subtle)',
+                color: 'var(--text-primary)',
+              }}
+            >
+              Sign out
+            </button>
+          )}
         </nav>
       </div>
     </header>

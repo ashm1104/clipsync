@@ -5,14 +5,25 @@ import PasteArea from '../components/paste/PasteArea';
 import ImageDrop from '../components/paste/ImageDrop';
 import RoomCard from '../components/room/RoomCard';
 import ClipFeed from '../components/clips/ClipFeed';
+import TimerCard from '../components/room/TimerCard';
+import HistoryStrip from '../components/room/HistoryStrip';
+import AmberBanner from '../components/room/AmberBanner';
+import PersonalHistory from '../components/room/PersonalHistory';
 import { useRoom } from '../hooks/useRoom';
 import { useAnonAuth } from '../hooks/useAnonAuth';
+import { useLocalClips } from '../hooks/useLocalClips';
+import { useAppStore } from '../stores/appStore';
 
 export default function Home() {
   useAnonAuth();
   const { room, clips, sendText, sendImage } = useRoom();
   const [joinCode, setJoinCode] = useState('');
   const navigate = useNavigate();
+  const isAnon = useAppStore((s) => s.isAnonymous);
+  const localClips = useLocalClips();
+  const earliestCreatedAt = localClips.length
+    ? localClips.reduce((m, c) => Math.min(m, c.createdAt), localClips[0].createdAt)
+    : null;
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +44,8 @@ export default function Home() {
         }}
       >
         <section className="flex flex-col gap-[18px]">
-          {/* join-row */}
+          {isAnon && <AmberBanner />}
+
           <form
             onSubmit={handleJoin}
             className="flex items-center gap-2 rounded-card bg-bg-card px-4 py-3"
@@ -60,10 +72,8 @@ export default function Home() {
 
           <div style={{ borderTop: '0.5px solid var(--border-subtle)' }} />
 
-          {/* paste-card */}
           <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
 
-          {/* image-drop */}
           <ImageDrop onImage={sendImage} />
 
           <ClipFeed clips={clips} />
@@ -71,6 +81,14 @@ export default function Home() {
 
         <aside className="flex flex-col gap-[18px]">
           <RoomCard slug={room?.slug ?? null} />
+          {isAnon ? (
+            <>
+              <TimerCard createdAtMs={earliestCreatedAt} />
+              <HistoryStrip />
+            </>
+          ) : (
+            <PersonalHistory />
+          )}
         </aside>
       </main>
     </div>
