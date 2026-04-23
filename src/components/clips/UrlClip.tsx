@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Clip } from '../../hooks/useRoom';
 
 function hostname(url: string | null): string {
@@ -24,8 +24,16 @@ export default function UrlClip({ clip }: { clip: Clip }) {
   const host = useMemo(() => hostname(clip.content), [clip.content]);
   const favicon = useMemo(() => faviconUrl(clip.content), [clip.content]);
   const hasPreview = !!(clip.og_title || clip.og_desc || clip.og_image);
+  const [copied, setCopied] = useState(false);
 
   const href = clip.content ?? '#';
+
+  const copyUrl = async () => {
+    if (!clip.content) return;
+    await navigator.clipboard.writeText(clip.content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   return (
     <div
@@ -39,15 +47,25 @@ export default function UrlClip({ clip }: { clip: Clip }) {
         >
           url
         </span>
-        <a
-          href={href}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
-          style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
-        >
-          Open link
-        </a>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={copyUrl}
+            className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
+            style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+          >
+            {copied ? 'Copied' : 'Copy URL'}
+          </button>
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
+            style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+          >
+            Open link
+          </a>
+        </div>
       </div>
 
       {hasPreview ? (

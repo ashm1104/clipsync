@@ -21,13 +21,27 @@ export default function PasteArea({ onSend, onImagePaste, live }: Props) {
 
   const handlePaste = useCallback(
     (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-      // Image paste → hand off to image handler if provided.
-      const files = e.clipboardData.files;
-      if (files && files.length && onImagePaste) {
-        const first = Array.from(files).find((f) => f.type.startsWith('image/'));
-        if (first) {
+      if (onImagePaste) {
+        // On Windows, pasted screenshots arrive in `items` not `files`.
+        const fromFiles = Array.from(e.clipboardData.files ?? []).find((f) =>
+          f.type.startsWith('image/')
+        );
+        let imageFile: File | null = fromFiles ?? null;
+        if (!imageFile && e.clipboardData.items) {
+          for (const item of Array.from(e.clipboardData.items)) {
+            if (item.kind === 'file' && item.type.startsWith('image/')) {
+              const blob = item.getAsFile();
+              if (blob) {
+                const ext = item.type.split('/')[1] || 'png';
+                imageFile = new File([blob], `paste.${ext}`, { type: item.type });
+                break;
+              }
+            }
+          }
+        }
+        if (imageFile) {
           e.preventDefault();
-          onImagePaste(first);
+          onImagePaste(imageFile);
           return;
         }
       }
