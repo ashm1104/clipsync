@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green-primary: #3B6D11;
+  --green-hover: #27500A;
+  --green-light: #EAF3DE;
+  --green-text: #27500A;
+
+  --amber-primary: #BA7517;
+  --amber-light: #FAEEDA;
+  --amber-border: #FAC775;
+  --amber-text: #633806;
+
+  --red-light: #FCEBEB;
+  --red-text: #A32D2D;
+
+  --blue-light: #E6F1FB;
+  --blue-text: #185FA5;
+
+  --bg-page: #f0ede8;
+  --bg-card: #ffffff;
+  --bg-surface: #f5f4f0;
+  --bg-raised: #ebe9e3;
+  --text-primary: #1a1a18;
+  --text-secondary: #5a5754;
+  --text-tertiary: #9a9690;
+  --border-subtle: rgba(0, 0, 0, 0.07);
+  --border-default: rgba(0, 0, 0, 0.13);
+  --border-strong: rgba(0, 0, 0, 0.22);
+}
+
+.dark {
+  --bg-page: #111110;
+  --bg-card: #1a1a18;
+  --bg-surface: #222220;
+  --bg-raised: #2c2c2a;
+  --text-primary: #f0ede8;
+  --text-secondary: #9a9690;
+  --text-tertiary: #5a5754;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.24);
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-weight: 400;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.sync-dot-live {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #639922;
+  animation: breathe 2s ease-in-out infinite;
+}
