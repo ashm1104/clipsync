@@ -156,6 +156,22 @@ export function useRoom(initialSlug?: string) {
   const sendImage = useCallback(
     async (file: File, onProgress?: (pct: number) => void) => {
       const r = await ensureRoom();
+
+      // Pro gate: free rooms hold 3 images max.
+      const state = useAppStore.getState();
+      if (state.plan !== 'pro') {
+        const imageCount = clips.filter((c) => c.type === 'image').length;
+        if (imageCount >= 3) {
+          state.pushToast({
+            kind: 'warning',
+            title: '3 image limit reached',
+            body: 'Free rooms hold 3 images.',
+          });
+          state.openUpgrade('image_limit');
+          return;
+        }
+      }
+
       const { path, size } = await uploadImageToRoom(file, r.id, onProgress);
       const uid = useAppStore.getState().userId;
       const { data, error } = await supabase
@@ -181,7 +197,7 @@ export function useRoom(initialSlug?: string) {
         });
       }
     },
-    [ensureRoom]
+    [ensureRoom, clips]
   );
 
   return { room, clips, loading, notFound, ensureRoom, sendText, sendImage, loadBySlug };

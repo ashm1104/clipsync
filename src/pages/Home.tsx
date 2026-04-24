@@ -110,6 +110,31 @@ function AnonHome() {
   );
 }
 
+function NewRoomCard() {
+  const openCreateRoom = useAppStore((s) => s.openCreateRoom);
+  return (
+    <div
+      className="rounded-card p-4"
+      style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border-default)' }}
+    >
+      <div className="text-xs uppercase tracking-wider text-text-tertiary">Rooms</div>
+      <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
+        Spin up a shareable room for one-off collaborations.
+      </p>
+      <button
+        type="button"
+        onClick={openCreateRoom}
+        className="mt-3 w-full rounded-btn px-3 py-2 text-sm font-medium text-white transition-colors"
+        style={{ background: '#3B6D11' }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = '#27500A')}
+        onMouseLeave={(e) => (e.currentTarget.style.background = '#3B6D11')}
+      >
+        New room
+      </button>
+    </div>
+  );
+}
+
 function LoggedInHome() {
   const { clips, sendText, sendImage } = usePersonalClipboard();
 
@@ -144,15 +169,7 @@ function LoggedInHome() {
       </section>
 
       <aside className="flex flex-col gap-[18px]">
-        <div
-          className="rounded-card p-4 text-sm"
-          style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border-default)' }}
-        >
-          <div className="mb-1 text-xs uppercase tracking-wider text-text-tertiary">Rooms</div>
-          <div style={{ color: 'var(--text-secondary)' }}>
-            Ad-hoc sharing rooms arrive in Phase 4.
-          </div>
-        </div>
+        <NewRoomCard />
       </aside>
     </main>
   );

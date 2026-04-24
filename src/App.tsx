@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Room from './pages/Room';
 import SignInModal from './components/modals/SignInModal';
 import UpgradeModal from './components/modals/UpgradeModal';
+import CreateRoomModal from './components/modals/CreateRoomModal';
 import ToastHost from './components/toasts/Toast';
 import { usePlan } from './hooks/usePlan';
 
@@ -21,6 +22,7 @@ export default function App() {
       </Routes>
       <SignInModal />
       <UpgradeModal />
+      <CreateRoomModal />
       <ToastHost />
     </BrowserRouter>
   );
