@@ -1,6 +1,16 @@
 import { create } from 'zustand';
 
 export type ToastKind = 'success' | 'info' | 'warning' | 'error';
+export type Plan = 'free' | 'pro';
+export type UpgradeReason =
+  | 'image_limit'
+  | 'password_room'
+  | 'file_upload'
+  | 'custom_slug'
+  | 'expiry_7d'
+  | 'history_30d'
+  | 'third_device'
+  | 'default';
 
 export type Toast = {
   id: string;
@@ -12,11 +22,22 @@ export type Toast = {
 type AppState = {
   userId: string | null;
   isAnonymous: boolean;
+  plan: Plan;
   setSession: (userId: string | null, isAnonymous: boolean) => void;
+  setPlan: (plan: Plan) => void;
 
   signInModalOpen: boolean;
   openSignIn: () => void;
   closeSignIn: () => void;
+
+  upgradeModalOpen: boolean;
+  upgradeReason: UpgradeReason;
+  openUpgrade: (reason?: UpgradeReason) => void;
+  closeUpgrade: () => void;
+
+  createRoomModalOpen: boolean;
+  openCreateRoom: () => void;
+  closeCreateRoom: () => void;
 
   toasts: Toast[];
   pushToast: (t: Omit<Toast, 'id'>) => string;
@@ -26,11 +47,23 @@ type AppState = {
 export const useAppStore = create<AppState>((set) => ({
   userId: null,
   isAnonymous: true,
+  plan: 'free',
   setSession: (userId, isAnonymous) => set({ userId, isAnonymous }),
+  setPlan: (plan) => set({ plan }),
 
   signInModalOpen: false,
   openSignIn: () => set({ signInModalOpen: true }),
   closeSignIn: () => set({ signInModalOpen: false }),
+
+  upgradeModalOpen: false,
+  upgradeReason: 'default',
+  openUpgrade: (reason = 'default') =>
+    set({ upgradeModalOpen: true, upgradeReason: reason }),
+  closeUpgrade: () => set({ upgradeModalOpen: false }),
+
+  createRoomModalOpen: false,
+  openCreateRoom: () => set({ createRoomModalOpen: true }),
+  closeCreateRoom: () => set({ createRoomModalOpen: false }),
 
   toasts: [],
   pushToast: (t) => {
