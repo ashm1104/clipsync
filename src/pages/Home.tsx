@@ -8,6 +8,8 @@ import ClipFeed from '../components/clips/ClipFeed';
 import TimerCard from '../components/room/TimerCard';
 import HistoryStrip from '../components/room/HistoryStrip';
 import AmberBanner from '../components/room/AmberBanner';
+import ExpiredRoomCard from '../components/room/ExpiredRoomCard';
+import { clearCurrentRoomSlug } from '../lib/localStorage';
 import { useRoom } from '../hooks/useRoom';
 import { usePersonalClipboard } from '../hooks/usePersonalClipboard';
 import { useAnonAuth } from '../hooks/useAnonAuth';
@@ -52,7 +54,16 @@ function AnonHome() {
       }}
     >
       <section className="flex flex-col gap-[18px]">
-        <AmberBanner expiresAtMs={expiresAtMs} />
+        {isRoomExpired && (
+          <ExpiredRoomCard
+            slug={room?.slug}
+            onStartNew={() => {
+              clearCurrentRoomSlug();
+              window.location.reload();
+            }}
+          />
+        )}
+        {!isRoomExpired && <AmberBanner expiresAtMs={expiresAtMs} />}
         <form
           onSubmit={handleJoin}
           className="flex items-center gap-2 rounded-card bg-bg-card px-4 py-3"
@@ -83,13 +94,17 @@ function AnonHome() {
             <ImageDrop onImage={sendImage} />
           </>
         )}
-        <ClipFeed clips={clips} emptyLabel={isRoomExpired ? 'Room expired.' : undefined} />
+        {!isRoomExpired && <ClipFeed clips={clips} />}
       </section>
 
       <aside className="flex flex-col gap-[18px]">
-        <RoomCard slug={room?.slug ?? null} />
-        <TimerCard expiresAtMs={expiresAtMs} />
-        <HistoryStrip expiresAtMs={expiresAtMs} />
+        {!isRoomExpired && (
+          <>
+            <RoomCard slug={room?.slug ?? null} />
+            <TimerCard expiresAtMs={expiresAtMs} />
+            <HistoryStrip expiresAtMs={expiresAtMs} />
+          </>
+        )}
       </aside>
     </main>
   );

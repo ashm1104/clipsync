@@ -8,9 +8,11 @@ import ClipFeed from '../components/clips/ClipFeed';
 import TimerCard from '../components/room/TimerCard';
 import HistoryStrip from '../components/room/HistoryStrip';
 import AmberBanner from '../components/room/AmberBanner';
+import ExpiredRoomCard from '../components/room/ExpiredRoomCard';
 import { useRoom } from '../hooks/useRoom';
 import { useAnonAuth } from '../hooks/useAnonAuth';
 import { useAppStore } from '../stores/appStore';
+import { useNavigate } from 'react-router-dom';
 
 function useNowTicker(intervalMs = 1000) {
   const [, setN] = useState(0);
@@ -24,6 +26,7 @@ export default function Room() {
   useAnonAuth();
   useNowTicker(1000);
   const { slug = '' } = useParams();
+  const navigate = useNavigate();
   const { room, clips: allClips, loading, notFound, sendText, sendImage } = useRoom(slug);
   const myUserId = useAppStore((s) => s.userId);
   const isAnon = useAppStore((s) => s.isAnonymous);
@@ -70,6 +73,17 @@ export default function Room() {
   const isRoomExpired = expiresAtMs != null && expiresAtMs <= Date.now();
   // Feed = clips from other users, visible only while the room is live.
   const feed = isRoomExpired ? [] : allClips.filter((c) => c.user_id !== myUserId);
+
+  if (isRoomExpired) {
+    return (
+      <div className="min-h-full">
+        <Navbar />
+        <main className="mx-auto max-w-[640px] px-[22px] py-16">
+          <ExpiredRoomCard slug={room?.slug} onStartNew={() => navigate('/')} />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full">
