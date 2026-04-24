@@ -6,7 +6,7 @@ export function useTimer(createdAtMs: number | null) {
 
   useEffect(() => {
     if (createdAtMs == null) return;
-    const id = setInterval(() => setTick((n) => n + 1), 30_000);
+    const id = setInterval(() => setTick((n) => n + 1), 1_000);
     return () => clearInterval(id);
   }, [createdAtMs]);
 
