@@ -72,6 +72,13 @@ body {
   animation: breathe 2s ease-in-out infinite;
 }
 
+.sync-dot-expired {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+}
+
 .tiptap-rich .ProseMirror { outline: none; }
 .tiptap-rich p { margin: 0 0 0.5em 0; }
 .tiptap-rich p:last-child { margin-bottom: 0; }

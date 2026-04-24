@@ -26,8 +26,12 @@ function useNowTicker(intervalMs = 5000) {
 function AnonHome() {
   useNowTicker(5000);
   const { room, clips: allClips, sendText, sendImage } = useRoom();
+  const myUserId = useAppStore((s) => s.userId);
   const cutoff = Date.now() - ANONYMOUS_TTL_MS;
-  const clips = allClips.filter((c) => new Date(c.created_at).getTime() > cutoff);
+  // Feed shows clips from OTHERS only; own sent clips live in history sidebar.
+  const clips = allClips.filter(
+    (c) => new Date(c.created_at).getTime() > cutoff && c.user_id !== myUserId
+  );
   const [joinCode, setJoinCode] = useState('');
   const navigate = useNavigate();
   const localClips = useLocalClips();
