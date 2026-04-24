@@ -9,6 +9,7 @@ import TimerCard from '../components/room/TimerCard';
 import HistoryStrip from '../components/room/HistoryStrip';
 import AmberBanner from '../components/room/AmberBanner';
 import ExpiredRoomCard from '../components/room/ExpiredRoomCard';
+import PasswordGate from '../components/room/PasswordGate';
 import { useRoom } from '../hooks/useRoom';
 import { useAnonAuth } from '../hooks/useAnonAuth';
 import { useAppStore } from '../stores/appStore';
@@ -30,6 +31,13 @@ export default function Room() {
   const { room, clips: allClips, loading, notFound, sendText, sendImage } = useRoom(slug);
   const myUserId = useAppStore((s) => s.userId);
   const isAnon = useAppStore((s) => s.isAnonymous);
+  const unlockKey = room ? `clipsync.unlock.${room.id}` : null;
+  const [unlocked, setUnlocked] = useState<boolean>(() =>
+    unlockKey ? sessionStorage.getItem(unlockKey) === '1' : false
+  );
+  useEffect(() => {
+    if (unlockKey) setUnlocked(sessionStorage.getItem(unlockKey) === '1');
+  }, [unlockKey]);
 
   if (loading) {
     return (
@@ -71,6 +79,24 @@ export default function Room() {
 
   const expiresAtMs = room ? new Date(room.expires_at).getTime() : null;
   const isRoomExpired = expiresAtMs != null && expiresAtMs <= Date.now();
+  const isOwner = !!(room?.owner_id && myUserId && room.owner_id === myUserId);
+  const needsPassword = !!room?.password_hash && !unlocked && !isOwner;
+
+  if (needsPassword && room) {
+    return (
+      <div className="min-h-full">
+        <Navbar />
+        <PasswordGate
+          slug={room.slug}
+          expectedHash={room.password_hash!}
+          onUnlock={() => {
+            if (unlockKey) sessionStorage.setItem(unlockKey, '1');
+            setUnlocked(true);
+          }}
+        />
+      </div>
+    );
+  }
   // Feed = clips from other users, visible only while the room is live.
   const feed = isRoomExpired ? [] : allClips.filter((c) => c.user_id !== myUserId);
 

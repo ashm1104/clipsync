@@ -27,6 +27,7 @@ export type Room = {
   owner_id: string | null;
   expires_at: string;
   created_at: string;
+  password_hash: string | null;
 };
 
 import { ANONYMOUS_TTL_MS } from '../lib/timer';
