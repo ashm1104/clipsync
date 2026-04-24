@@ -26,22 +26,27 @@ export type CreateRoomOptions = {
 };
 
 export async function createRoom(opts: CreateRoomOptions) {
-  const slug = opts.customSlug?.trim().toLowerCase() || (await createUniqueSlug());
-  if (opts.customSlug) {
+  const slug = await createUniqueSlug();
+  const custom_slug = opts.customSlug?.trim().toLowerCase() || null;
+
+  if (custom_slug) {
     const { data: existing } = await supabase
       .from('rooms')
-      .select('slug')
-      .eq('slug', slug)
+      .select('id')
+      .or(`slug.eq.${custom_slug},custom_slug.eq.${custom_slug}`)
       .maybeSingle();
-    if (existing) throw new Error(`Code "${slug}" is already in use`);
+    if (existing) throw new Error(`Code "${custom_slug}" is already taken`);
   }
 
   const password_hash = opts.password ? await hashPassword(opts.password) : null;
   const expires_at = new Date(Date.now() + EXPIRY_MS[opts.expiry]).toISOString();
 
+  const { data: auth } = await supabase.auth.getUser();
+  const owner_id = auth.user?.id ?? null;
+
   const { data, error } = await supabase
     .from('rooms')
-    .insert({ slug, expires_at, password_hash })
+    .insert({ slug, custom_slug, expires_at, password_hash, owner_id })
     .select()
     .single();
   if (error) throw error;

@@ -148,13 +148,9 @@ export default function Room() {
         </section>
 
         <aside className="flex flex-col gap-[18px]">
-          <RoomCard slug={room?.slug ?? null} />
-          {isAnon && (
-            <>
-              <TimerCard expiresAtMs={expiresAtMs} />
-              <HistoryStrip expiresAtMs={expiresAtMs} />
-            </>
-          )}
+          <RoomCard slug={room ? (room.custom_slug ?? room.slug) : null} />
+          <TimerCard expiresAtMs={expiresAtMs} />
+          <HistoryStrip expiresAtMs={expiresAtMs} />
         </aside>
       </main>
     </div>

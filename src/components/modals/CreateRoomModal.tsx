@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../../stores/appStore';
 import { createRoom, type RoomExpiry } from '../../lib/rooms';
 
@@ -15,7 +14,6 @@ export default function CreateRoomModal() {
   const plan = useAppStore((s) => s.plan);
   const openUpgrade = useAppStore((s) => s.openUpgrade);
   const pushToast = useAppStore((s) => s.pushToast);
-  const navigate = useNavigate();
 
   const [expiry, setExpiry] = useState<RoomExpiry>('24h');
   const [customSlug, setCustomSlug] = useState('');
@@ -62,13 +60,14 @@ export default function CreateRoomModal() {
         customSlug: useCustomSlug && isPro ? customSlug : null,
         password: usePassword && isPro ? password : null,
       });
+      const joinSlug = room.custom_slug ?? room.slug;
       pushToast({
         kind: 'success',
         title: 'Room created',
-        body: `/r/${room.slug} is live for ${EXPIRY_OPTIONS.find((o) => o.value === expiry)?.label}.`,
+        body: `/r/${joinSlug} is live for ${EXPIRY_OPTIONS.find((o) => o.value === expiry)?.label}.`,
       });
       close();
-      navigate(`/r/${room.slug}`);
+      window.open(`/r/${joinSlug}`, '_blank', 'noopener,noreferrer');
     } catch (e2) {
       setErr(e2 instanceof Error ? e2.message : 'Could not create room');
     } finally {

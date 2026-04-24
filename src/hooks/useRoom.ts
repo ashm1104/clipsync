@@ -24,6 +24,7 @@ export type Clip = {
 export type Room = {
   id: string;
   slug: string;
+  custom_slug: string | null;
   owner_id: string | null;
   expires_at: string;
   created_at: string;
@@ -42,7 +43,11 @@ export function useRoom(initialSlug?: string) {
 
   const loadBySlug = useCallback(async (slug: string) => {
     setLoading(true);
-    const { data } = await supabase.from('rooms').select('*').eq('slug', slug).maybeSingle();
+    const { data } = await supabase
+      .from('rooms')
+      .select('*')
+      .or(`slug.eq.${slug},custom_slug.eq.${slug}`)
+      .maybeSingle();
     if (!data) {
       setNotFound(true);
       setLoading(false);
@@ -80,6 +85,20 @@ export function useRoom(initialSlug?: string) {
         (payload) => {
           const newClip = payload.new as Clip;
           setClips((prev) => (prev.some((c) => c.id === newClip.id) ? prev : [...prev, newClip]));
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'clips',
+          filter: `room_id=eq.${room.id}`,
+        },
+        (payload) => {
+          const oldId = (payload.old as { id?: string } | null)?.id;
+          if (!oldId) return;
+          setClips((prev) => prev.filter((c) => c.id !== oldId));
         }
       )
       .subscribe();
@@ -136,7 +155,7 @@ export function useRoom(initialSlug?: string) {
         .select()
         .single();
       if (error) throw error;
-      if (useAppStore.getState().isAnonymous && data) {
+      if (data) {
         addLocalClip({
           id: data.id,
           roomSlug: r.slug,
@@ -166,7 +185,7 @@ export function useRoom(initialSlug?: string) {
           state.pushToast({
             kind: 'warning',
             title: '3 image limit reached',
-            body: 'Free rooms hold 3 images.',
+            body: 'Delete an image from history or upgrade for unlimited.',
           });
           state.openUpgrade('image_limit');
           return;
@@ -187,7 +206,7 @@ export function useRoom(initialSlug?: string) {
         .select()
         .single();
       if (error) throw error;
-      if (useAppStore.getState().isAnonymous && data) {
+      if (data) {
         addLocalClip({
           id: data.id,
           roomSlug: r.slug,
@@ -197,6 +216,11 @@ export function useRoom(initialSlug?: string) {
           createdAt: new Date(data.created_at).getTime(),
         });
       }
+      useAppStore.getState().pushToast({
+        kind: 'success',
+        title: 'Image sent',
+        body: 'Your image is in the room history.',
+      });
     },
     [ensureRoom, clips]
   );

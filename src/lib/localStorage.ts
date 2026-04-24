@@ -49,6 +49,14 @@ export function addLocalClip(clip: LocalClip) {
   window.dispatchEvent(new CustomEvent('clipsync.local.change'));
 }
 
+export function removeLocalClip(id: string) {
+  const all = read();
+  const next = all.filter((c) => c.id !== id);
+  if (next.length === all.length) return;
+  write(next);
+  window.dispatchEvent(new CustomEvent('clipsync.local.change'));
+}
+
 export function clearLocalClips() {
   localStorage.removeItem(KEY);
   window.dispatchEvent(new CustomEvent('clipsync.local.change'));

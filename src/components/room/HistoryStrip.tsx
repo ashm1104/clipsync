@@ -1,5 +1,8 @@
 import { useLocalClips } from '../../hooks/useLocalClips';
 import { useRoomTimer } from '../../hooks/useTimer';
+import { supabase } from '../../lib/supabase';
+import { removeLocalClip } from '../../lib/localStorage';
+import { useAppStore } from '../../stores/appStore';
 
 const TYPE_LABEL: Record<string, string> = {
   text: 'text',
@@ -34,6 +37,17 @@ function Swatch({ type }: { type: string }) {
 export default function HistoryStrip({ expiresAtMs }: Props) {
   const clips = useLocalClips();
   const { state, label } = useRoomTimer(expiresAtMs);
+  const pushToast = useAppStore((s) => s.pushToast);
+
+  const handleDelete = async (id: string) => {
+    removeLocalClip(id);
+    const { error } = await supabase.from('clips').delete().eq('id', id);
+    if (error) {
+      pushToast({ kind: 'error', title: 'Could not delete', body: error.message });
+      return;
+    }
+    pushToast({ kind: 'success', title: 'Removed from history' });
+  };
 
   const timerColor =
     state === 'red'
@@ -71,7 +85,7 @@ export default function HistoryStrip({ expiresAtMs }: Props) {
                 ? c.content.replace(/<[^>]+>/g, '').slice(0, 48) || '[rich text]'
                 : c.content.slice(0, 48);
             return (
-              <li key={c.id} className="flex items-center gap-2 text-xs">
+              <li key={c.id} className="group flex items-center gap-2 text-xs">
                 <Swatch type={c.type} />
                 <span
                   className="shrink-0 rounded-pill px-1.5 py-0.5 text-[10px] uppercase"
@@ -82,6 +96,15 @@ export default function HistoryStrip({ expiresAtMs }: Props) {
                 <span className="min-w-0 flex-1 truncate" style={{ color: 'var(--text-secondary)' }}>
                   {preview}
                 </span>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(c.id)}
+                  aria-label="Remove from history"
+                  className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                  style={{ color: 'var(--text-tertiary)' }}
+                >
+                  ×
+                </button>
               </li>
             );
           })}
