@@ -1,6 +1,6 @@
-import { useTimer } from '../../hooks/useTimer';
+import { useRoomTimer } from '../../hooks/useTimer';
 
-type Props = { createdAtMs: number | null };
+type Props = { expiresAtMs: number | null };
 
 const PALETTE = {
   green: {
@@ -29,15 +29,15 @@ const PALETTE = {
   },
 } as const;
 
-export default function TimerCard({ createdAtMs }: Props) {
-  const { state, label } = useTimer(createdAtMs);
+export default function TimerCard({ expiresAtMs }: Props) {
+  const { state, label } = useRoomTimer(expiresAtMs);
   const pal = PALETTE[state];
 
   let main = '';
-  if (state === 'green') main = `deletes in ${label}`;
-  else if (state === 'amber') main = `deletes in ${label}`;
-  else if (state === 'red') main = `deletes in ${label} · Save now`;
-  else main = 'This was here. Sign in so it never disappears.';
+  if (state === 'green') main = `Room expires in ${label}`;
+  else if (state === 'amber') main = `Room expires in ${label}`;
+  else if (state === 'red') main = `Room expires in ${label} · Save now`;
+  else main = 'Room expired. Sign in so it never disappears.';
 
   return (
     <div
@@ -56,10 +56,10 @@ export default function TimerCard({ createdAtMs }: Props) {
             animation: pal.pulse ? 'breathe 2s ease-in-out infinite' : undefined,
           }}
         />
-        Clipboard timer
+        Room timer
       </div>
       <div className="mt-1 text-sm font-medium">{main}</div>
-      {createdAtMs == null && (
+      {expiresAtMs == null && (
         <div className="mt-1 text-xs opacity-70">
           Countdown starts when you send your first clip.
         </div>

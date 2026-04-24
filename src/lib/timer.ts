@@ -14,9 +14,13 @@ export type TimerState = 'green' | 'amber' | 'red' | 'expired';
 
 export function getTimerState(createdAtMs: number, now = Date.now()): TimerState {
   const remaining = createdAtMs + ANONYMOUS_TTL_MS - now;
-  if (remaining <= 0) return 'expired';
-  if (remaining <= RED_THRESHOLD_MS) return 'red';
-  if (remaining <= AMBER_THRESHOLD_MS) return 'amber';
+  return getTimerStateFromRemaining(remaining);
+}
+
+export function getTimerStateFromRemaining(remainingMs: number): TimerState {
+  if (remainingMs <= 0) return 'expired';
+  if (remainingMs <= RED_THRESHOLD_MS) return 'red';
+  if (remainingMs <= AMBER_THRESHOLD_MS) return 'amber';
   return 'green';
 }
 

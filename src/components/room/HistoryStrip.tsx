@@ -1,5 +1,5 @@
 import { useLocalClips } from '../../hooks/useLocalClips';
-import { getTimerState, formatRemaining, remainingMs } from '../../lib/timer';
+import { useRoomTimer } from '../../hooks/useTimer';
 
 const TYPE_LABEL: Record<string, string> = {
   text: 'text',
@@ -9,6 +9,8 @@ const TYPE_LABEL: Record<string, string> = {
   url: 'url',
   file: 'file',
 };
+
+type Props = { expiresAtMs: number | null };
 
 function Swatch({ type }: { type: string }) {
   const bg =
@@ -29,15 +31,32 @@ function Swatch({ type }: { type: string }) {
   );
 }
 
-export default function HistoryStrip() {
+export default function HistoryStrip({ expiresAtMs }: Props) {
   const clips = useLocalClips();
+  const { state, label } = useRoomTimer(expiresAtMs);
+
+  const timerColor =
+    state === 'red'
+      ? 'var(--red-text)'
+      : state === 'amber'
+      ? 'var(--amber-text)'
+      : state === 'expired'
+      ? 'var(--text-tertiary)'
+      : 'var(--text-tertiary)';
 
   return (
     <div
       className="rounded-card p-4"
       style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border-default)' }}
     >
-      <div className="mb-2 text-xs uppercase tracking-wider text-text-tertiary">History</div>
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-xs uppercase tracking-wider text-text-tertiary">History</span>
+        {expiresAtMs != null && (
+          <span className="text-xs" style={{ color: timerColor }}>
+            {state === 'expired' ? 'expired' : label}
+          </span>
+        )}
+      </div>
       {clips.length === 0 ? (
         <div className="text-xs text-text-tertiary">
           Your clips from this browser will show here.
@@ -45,22 +64,12 @@ export default function HistoryStrip() {
       ) : (
         <ul className="flex flex-col gap-2">
           {clips.slice(0, 8).map((c) => {
-            const state = getTimerState(c.createdAt);
-            const label = formatRemaining(remainingMs(c.createdAt));
             const preview =
               c.type === 'image'
                 ? '[image]'
                 : c.type === 'rich_text'
                 ? c.content.replace(/<[^>]+>/g, '').slice(0, 48) || '[rich text]'
                 : c.content.slice(0, 48);
-            const timerColor =
-              state === 'red'
-                ? 'var(--red-text)'
-                : state === 'amber'
-                ? 'var(--amber-text)'
-                : state === 'expired'
-                ? 'var(--text-tertiary)'
-                : 'var(--text-tertiary)';
             return (
               <li key={c.id} className="flex items-center gap-2 text-xs">
                 <Swatch type={c.type} />
@@ -73,7 +82,6 @@ export default function HistoryStrip() {
                 <span className="min-w-0 flex-1 truncate" style={{ color: 'var(--text-secondary)' }}>
                   {preview}
                 </span>
-                <span style={{ color: timerColor }}>{label}</span>
               </li>
             );
           })}

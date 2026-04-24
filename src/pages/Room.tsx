@@ -10,9 +10,7 @@ import HistoryStrip from '../components/room/HistoryStrip';
 import AmberBanner from '../components/room/AmberBanner';
 import { useRoom } from '../hooks/useRoom';
 import { useAnonAuth } from '../hooks/useAnonAuth';
-import { useLocalClips } from '../hooks/useLocalClips';
 import { useAppStore } from '../stores/appStore';
-import { ANONYMOUS_TTL_MS } from '../lib/timer';
 
 function useNowTicker(intervalMs = 1000) {
   const [, setN] = useState(0);
@@ -29,7 +27,6 @@ export default function Room() {
   const { room, clips: allClips, loading, notFound, sendText, sendImage } = useRoom(slug);
   const myUserId = useAppStore((s) => s.userId);
   const isAnon = useAppStore((s) => s.isAnonymous);
-  const localClips = useLocalClips();
 
   if (loading) {
     return (
@@ -69,27 +66,10 @@ export default function Room() {
     );
   }
 
-  const cutoff = Date.now() - ANONYMOUS_TTL_MS;
-  // Feed = clips received from other users, within TTL.
-  const feed = allClips.filter(
-    (c) => new Date(c.created_at).getTime() > cutoff && c.user_id !== myUserId
-  );
-  const isRoomExpired = room ? new Date(room.expires_at).getTime() <= Date.now() : false;
-
-  // Earliest in-window clip drives the countdown (matches Home behavior).
-  const earliestRemote = allClips
-    .filter((c) => new Date(c.created_at).getTime() > cutoff)
-    .reduce<number | null>((min, c) => {
-      const t = new Date(c.created_at).getTime();
-      return min == null || t < min ? t : min;
-    }, null);
-  const earliestLocal = localClips.length
-    ? localClips.reduce((m, c) => Math.min(m, c.createdAt), localClips[0].createdAt)
-    : null;
-  const earliestCreatedAt =
-    earliestRemote != null && earliestLocal != null
-      ? Math.min(earliestRemote, earliestLocal)
-      : earliestRemote ?? earliestLocal;
+  const expiresAtMs = room ? new Date(room.expires_at).getTime() : null;
+  const isRoomExpired = expiresAtMs != null && expiresAtMs <= Date.now();
+  // Feed = clips from other users, visible only while the room is live.
+  const feed = isRoomExpired ? [] : allClips.filter((c) => c.user_id !== myUserId);
 
   return (
     <div className="min-h-full">
@@ -112,9 +92,12 @@ export default function Room() {
             </span>
           </div>
 
-          {isAnon && <AmberBanner />}
+          {isAnon && <AmberBanner expiresAtMs={expiresAtMs} />}
 
-          <ClipFeed clips={feed} emptyLabel="Waiting for the first clip…" />
+          <ClipFeed
+            clips={feed}
+            emptyLabel={isRoomExpired ? 'Room expired.' : 'Waiting for the first clip…'}
+          />
 
           {!isRoomExpired && (
             <>
@@ -128,8 +111,8 @@ export default function Room() {
           <RoomCard slug={room?.slug ?? null} />
           {isAnon && (
             <>
-              <TimerCard createdAtMs={earliestCreatedAt} />
-              <HistoryStrip />
+              <TimerCard expiresAtMs={expiresAtMs} />
+              <HistoryStrip expiresAtMs={expiresAtMs} />
             </>
           )}
         </aside>

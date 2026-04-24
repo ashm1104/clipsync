@@ -11,9 +11,7 @@ import AmberBanner from '../components/room/AmberBanner';
 import { useRoom } from '../hooks/useRoom';
 import { usePersonalClipboard } from '../hooks/usePersonalClipboard';
 import { useAnonAuth } from '../hooks/useAnonAuth';
-import { useLocalClips } from '../hooks/useLocalClips';
 import { useAppStore } from '../stores/appStore';
-import { ANONYMOUS_TTL_MS } from '../lib/timer';
 
 function useNowTicker(intervalMs = 5000) {
   const [, setN] = useState(0);
@@ -24,20 +22,18 @@ function useNowTicker(intervalMs = 5000) {
 }
 
 function AnonHome() {
-  useNowTicker(5000);
+  useNowTicker(1000);
   const { room, clips: allClips, sendText, sendImage } = useRoom();
   const myUserId = useAppStore((s) => s.userId);
-  const cutoff = Date.now() - ANONYMOUS_TTL_MS;
+  const expiresAtMs = room ? new Date(room.expires_at).getTime() : null;
+  const isRoomExpired = expiresAtMs != null && expiresAtMs <= Date.now();
   // Feed shows clips from OTHERS only; own sent clips live in history sidebar.
-  const clips = allClips.filter(
-    (c) => new Date(c.created_at).getTime() > cutoff && c.user_id !== myUserId
-  );
+  // Clips are hidden once the room itself expires.
+  const clips = isRoomExpired
+    ? []
+    : allClips.filter((c) => c.user_id !== myUserId);
   const [joinCode, setJoinCode] = useState('');
   const navigate = useNavigate();
-  const localClips = useLocalClips();
-  const earliestCreatedAt = localClips.length
-    ? localClips.reduce((m, c) => Math.min(m, c.createdAt), localClips[0].createdAt)
-    : null;
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +52,7 @@ function AnonHome() {
       }}
     >
       <section className="flex flex-col gap-[18px]">
-        <AmberBanner />
+        <AmberBanner expiresAtMs={expiresAtMs} />
         <form
           onSubmit={handleJoin}
           className="flex items-center gap-2 rounded-card bg-bg-card px-4 py-3"
@@ -81,15 +77,19 @@ function AnonHome() {
           </button>
         </form>
         <div style={{ borderTop: '0.5px solid var(--border-subtle)' }} />
-        <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
-        <ImageDrop onImage={sendImage} />
-        <ClipFeed clips={clips} />
+        {!isRoomExpired && (
+          <>
+            <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
+            <ImageDrop onImage={sendImage} />
+          </>
+        )}
+        <ClipFeed clips={clips} emptyLabel={isRoomExpired ? 'Room expired.' : undefined} />
       </section>
 
       <aside className="flex flex-col gap-[18px]">
         <RoomCard slug={room?.slug ?? null} />
-        <TimerCard createdAtMs={earliestCreatedAt} />
-        <HistoryStrip />
+        <TimerCard expiresAtMs={expiresAtMs} />
+        <HistoryStrip expiresAtMs={expiresAtMs} />
       </aside>
     </main>
   );

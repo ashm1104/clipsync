@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
-import { getTimerState, remainingMs, formatRemaining, type TimerState } from '../lib/timer';
+import { getTimerStateFromRemaining, formatRemaining, type TimerState } from '../lib/timer';
 
-export function useTimer(createdAtMs: number | null) {
+// Takes the room's absolute expiry (ms since epoch). One source of truth for
+// everything that counts down — TimerCard, AmberBanner, HistoryStrip.
+export function useRoomTimer(expiresAtMs: number | null) {
   const [, setTick] = useState(0);
 
   useEffect(() => {
-    if (createdAtMs == null) return;
+    if (expiresAtMs == null) return;
     const id = setInterval(() => setTick((n) => n + 1), 1_000);
     return () => clearInterval(id);
-  }, [createdAtMs]);
+  }, [expiresAtMs]);
 
-  if (createdAtMs == null) {
+  if (expiresAtMs == null) {
     return { state: 'green' as TimerState, remaining: 0, label: '' };
   }
-  const remaining = remainingMs(createdAtMs);
-  const state = getTimerState(createdAtMs);
+  const remaining = Math.max(0, expiresAtMs - Date.now());
+  const state = getTimerStateFromRemaining(remaining);
   return { state, remaining, label: formatRemaining(remaining) };
 }

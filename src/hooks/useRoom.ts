@@ -29,7 +29,8 @@ export type Room = {
   created_at: string;
 };
 
-const ANON_TTL_MS = 24 * 60 * 60 * 1000;
+import { ANONYMOUS_TTL_MS } from '../lib/timer';
+const ANON_TTL_MS = ANONYMOUS_TTL_MS;
 
 export function useRoom(initialSlug?: string) {
   const [room, setRoom] = useState<Room | null>(null);
@@ -117,10 +118,12 @@ export function useRoom(initialSlug?: string) {
         og = await fetchOg(text);
       }
 
+      const uid = useAppStore.getState().userId;
       const { data, error } = await supabase
         .from('clips')
         .insert({
           room_id: r.id,
+          user_id: uid,
           type,
           content,
           language,
@@ -154,10 +157,12 @@ export function useRoom(initialSlug?: string) {
     async (file: File, onProgress?: (pct: number) => void) => {
       const r = await ensureRoom();
       const { path, size } = await uploadImageToRoom(file, r.id, onProgress);
+      const uid = useAppStore.getState().userId;
       const { data, error } = await supabase
         .from('clips')
         .insert({
           room_id: r.id,
+          user_id: uid,
           type: 'image',
           content: path,
           size_bytes: size,

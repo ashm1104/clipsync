@@ -1,26 +1,15 @@
-import { useMemo } from 'react';
-import { useLocalClips } from '../../hooks/useLocalClips';
 import { useAppStore } from '../../stores/appStore';
-import { getTimerState, formatRemaining, remainingMs } from '../../lib/timer';
+import { useRoomTimer } from '../../hooks/useTimer';
 
-export default function AmberBanner() {
+type Props = { expiresAtMs: number | null };
+
+export default function AmberBanner({ expiresAtMs }: Props) {
   const isAnon = useAppStore((s) => s.isAnonymous);
   const openSignIn = useAppStore((s) => s.openSignIn);
-  const clips = useLocalClips();
+  const { state, label } = useRoomTimer(expiresAtMs);
 
-  const earliest = useMemo(() => {
-    if (!isAnon || !clips.length) return null;
-    const amberOrRed = clips.filter((c) => {
-      const s = getTimerState(c.createdAt);
-      return s === 'amber' || s === 'red';
-    });
-    if (!amberOrRed.length) return null;
-    return amberOrRed.reduce((oldest, c) => (c.createdAt < oldest.createdAt ? c : oldest), amberOrRed[0]);
-  }, [clips, isAnon]);
-
-  if (!earliest) return null;
-
-  const label = formatRemaining(remainingMs(earliest.createdAt));
+  if (!isAnon || expiresAtMs == null) return null;
+  if (state !== 'amber' && state !== 'red') return null;
 
   return (
     <div
@@ -33,7 +22,7 @@ export default function AmberBanner() {
       role="alert"
     >
       <div className="text-sm">
-        Your clipboard expires in <strong>{label}</strong>. Sign in free to save it forever.
+        Your room expires in <strong>{label}</strong>. Sign in free to save it forever.
       </div>
       <button
         type="button"
