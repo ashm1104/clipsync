@@ -132,8 +132,7 @@ export function useRoom(initialSlug?: string) {
         .select()
         .single();
       if (error) throw error;
-      const state = useAppStore.getState();
-      if (state.isAnonymous && data) {
+      if (useAppStore.getState().isAnonymous && data) {
         addLocalClip({
           id: data.id,
           roomSlug: r.slug,
@@ -145,17 +144,6 @@ export function useRoom(initialSlug?: string) {
           og_image: og?.image ?? null,
           size_bytes: data.size_bytes ?? null,
           createdAt: new Date(data.created_at).getTime(),
-        });
-      } else if (!state.isAnonymous && state.userId && data) {
-        await supabase.from('personal_clips').insert({
-          user_id: state.userId,
-          type,
-          content,
-          language,
-          og_title: og?.title ?? null,
-          og_desc: og?.description ?? null,
-          og_image: og?.image ?? null,
-          size_bytes: data.size_bytes ?? null,
         });
       }
     },

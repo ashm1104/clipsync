@@ -8,9 +8,12 @@ export function useLocalClips(): LocalClip[] {
     const refresh = () => setClips(getLocalClips());
     window.addEventListener('clipsync.local.change', refresh);
     window.addEventListener('storage', refresh);
+    // Poll so expired clips drop out on their own.
+    const id = setInterval(refresh, 5_000);
     return () => {
       window.removeEventListener('clipsync.local.change', refresh);
       window.removeEventListener('storage', refresh);
+      clearInterval(id);
     };
   }, []);
 

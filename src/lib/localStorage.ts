@@ -1,4 +1,5 @@
 import type { ClipType } from './contentDetector';
+import { ANONYMOUS_TTL_MS } from './timer';
 
 const KEY = 'clipsync.anon.clips';
 const ROOM_KEY = 'clipsync.anon.currentRoom';
@@ -29,7 +30,15 @@ function write(clips: LocalClip[]) {
 }
 
 export function getLocalClips(): LocalClip[] {
-  return read();
+  const all = read();
+  const cutoff = Date.now() - ANONYMOUS_TTL_MS;
+  const fresh = all.filter((c) => c.createdAt > cutoff);
+  if (fresh.length !== all.length) {
+    write(fresh);
+    // Fire in a microtask so consumers reading during render don't loop.
+    queueMicrotask(() => window.dispatchEvent(new CustomEvent('clipsync.local.change')));
+  }
+  return fresh;
 }
 
 export function addLocalClip(clip: LocalClip) {

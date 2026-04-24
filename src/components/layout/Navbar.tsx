@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAppStore } from '../../stores/appStore';
 import { supabase } from '../../lib/supabase';
+import { clearCurrentRoomSlug, clearLocalClips } from '../../lib/localStorage';
 
 export default function Navbar() {
   const openSignIn = useAppStore((s) => s.openSignIn);
@@ -9,8 +10,15 @@ export default function Navbar() {
   const pushToast = useAppStore((s) => s.pushToast);
 
   const handleSignOut = async () => {
+    clearLocalClips();
+    clearCurrentRoomSlug();
     await supabase.auth.signOut();
     pushToast({ kind: 'info', title: 'Signed out' });
+    // Full reload: resets room state, current-room slug, clip feed, and
+    // re-enters the anon flow cleanly.
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 150);
   };
 
   return (
