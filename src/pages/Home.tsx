@@ -19,7 +19,7 @@ import { useAnonAuth } from '../hooks/useAnonAuth';
 import { useRoomTimer } from '../hooks/useTimer';
 import { useAppStore } from '../stores/appStore';
 
-const AMBER_NUDGE_KEY = 'clipsync.amberNudgeShown';
+const AMBER_NUDGE_PREFIX = 'clipsync.amberNudge:';
 
 function useNowTicker(intervalMs = 5000) {
   const [, setN] = useState(0);
@@ -31,7 +31,7 @@ function useNowTicker(intervalMs = 5000) {
 
 function AnonHome() {
   useNowTicker(1000);
-  const { room, clips: allClips, sendText, sendImage } = useRoom();
+  const { room, clips: allClips, sendText, sendImage, sendFile } = useRoom();
   const myUserId = useAppStore((s) => s.userId);
   const isAnon = useAppStore((s) => s.isAnonymous);
   const openSignIn = useAppStore((s) => s.openSignIn);
@@ -40,15 +40,18 @@ function AnonHome() {
   const { state: timerState } = useRoomTimer(expiresAtMs);
 
   // Spec §8: when timer turns amber AND user has content AND is anon,
-  // auto-open the SignInModal once per session as the conversion nudge.
+  // auto-open the SignInModal once per room as the conversion nudge.
+  // Keyed on room id so a brand-new room re-arms the nudge.
   useEffect(() => {
     if (!isAnon) return;
+    if (!room) return;
     if (allClips.length === 0) return;
     if (timerState !== 'amber' && timerState !== 'red') return;
-    if (sessionStorage.getItem(AMBER_NUDGE_KEY)) return;
-    sessionStorage.setItem(AMBER_NUDGE_KEY, '1');
+    const key = AMBER_NUDGE_PREFIX + room.id;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
     openSignIn();
-  }, [isAnon, allClips.length, timerState, openSignIn]);
+  }, [isAnon, room, allClips.length, timerState, openSignIn]);
   // Feed shows clips from OTHERS only; own sent clips live in history sidebar.
   // Clips are hidden once the room itself expires.
   const clips = isRoomExpired
@@ -111,7 +114,7 @@ function AnonHome() {
         {!isRoomExpired && (
           <>
             <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
-            <ImageDrop onImage={sendImage} />
+            <ImageDrop onImage={sendImage} onFile={sendFile} />
           </>
         )}
         {!isRoomExpired && <ClipFeed clips={clips} />}
@@ -196,7 +199,7 @@ function JoinRoomCard() {
 
 function LoggedInHome() {
   useDeviceRegistration();
-  const { clips, sendText, sendImage } = usePersonalClipboard();
+  const { clips, sendText, sendImage, sendFile } = usePersonalClipboard();
   const plan = useAppStore((s) => s.plan);
 
   return (
@@ -225,7 +228,7 @@ function LoggedInHome() {
           Personal Sync active — clips sync across all your signed-in devices.
         </div>
         <PasteArea onSend={sendText} onImagePaste={sendImage} live />
-        <ImageDrop onImage={sendImage} />
+        <ImageDrop onImage={sendImage} onFile={sendFile} />
         <ClipFeed
           clips={clips}
           source="personal_clips"

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAppStore } from '../stores/appStore';
 import { detectType, detectLanguage } from '../lib/contentDetector';
-import { uploadImageToRoom } from '../lib/storage';
+import { uploadImageToRoom, uploadFileToRoom } from '../lib/storage';
 import { fetchOg } from '../lib/og';
 import type { Clip } from './useRoom';
 
@@ -111,5 +111,22 @@ export function usePersonalClipboard() {
     []
   );
 
-  return { clips, sendText, sendImage };
+  const sendFile = useCallback(
+    async (file: File, onProgress?: (pct: number) => void) => {
+      const uid = useAppStore.getState().userId;
+      if (!uid) return;
+      const { path, size, name } = await uploadFileToRoom(file, `user-${uid}`, onProgress);
+      const { error } = await supabase.from('personal_clips').insert({
+        user_id: uid,
+        type: 'file',
+        content: path,
+        og_title: name,
+        size_bytes: size,
+      });
+      if (error) throw error;
+    },
+    []
+  );
+
+  return { clips, sendText, sendImage, sendFile };
 }

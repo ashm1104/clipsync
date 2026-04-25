@@ -3,6 +3,7 @@ import { useAppStore } from '../../stores/appStore';
 
 type Props = {
   onImage: (file: File, onProgress?: (pct: number) => void) => Promise<void> | void;
+  onFile?: (file: File, onProgress?: (pct: number) => void) => Promise<void> | void;
 };
 
 function detectSafari(): boolean {
@@ -13,28 +14,43 @@ function detectSafari(): boolean {
   return iOS || webkitNoChromium;
 }
 
-export default function ImageDrop({ onImage }: Props) {
+export default function ImageDrop({ onImage, onFile }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [safariWarning, setSafariWarning] = useState(false);
   const isSafari = detectSafari();
+  const plan = useAppStore((s) => s.plan);
   const pushToast = useAppStore((s) => s.pushToast);
   const openUpgrade = useAppStore((s) => s.openUpgrade);
 
-  const fileGate = useCallback(
-    (file: File): boolean => {
-      if (file.type.startsWith('image/')) return true;
-      pushToast({
-        kind: 'warning',
-        title: 'File sharing is a Pro feature',
-        body: 'Upgrade to send PDFs, ZIPs and more.',
-      });
-      openUpgrade('file_upload');
-      return false;
+  const handleNonImageFile = useCallback(
+    async (file: File) => {
+      if (plan !== 'pro' || !onFile) {
+        pushToast({
+          kind: 'warning',
+          title: 'File sharing is a Pro feature',
+          body: 'Upgrade to send PDFs, ZIPs and more.',
+        });
+        openUpgrade('file_upload');
+        return;
+      }
+      setError(null);
+      setProgress(0);
+      try {
+        await onFile(file, setProgress);
+      } catch (err) {
+        setError(
+          err instanceof Error && err.message === 'FILE_TOO_LARGE'
+            ? 'That file is over the 50MB cap.'
+            : 'Upload failed. Try again.'
+        );
+      } finally {
+        setProgress(null);
+      }
     },
-    [pushToast, openUpgrade]
+    [plan, onFile, pushToast, openUpgrade]
   );
 
   const handleFile = useCallback(
@@ -65,10 +81,10 @@ export default function ImageDrop({ onImage }: Props) {
         await handleFile(image);
         return;
       }
-      // Non-image drop → file_upload Pro gate.
-      fileGate(files[0]);
+      // Non-image drop → either gate (free) or actually upload (Pro).
+      await handleNonImageFile(files[0]);
     },
-    [handleFile, fileGate]
+    [handleFile, handleNonImageFile]
   );
 
   const handlePickClick = useCallback(async () => {

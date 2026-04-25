@@ -68,8 +68,8 @@ export default function DevicesPanel() {
     if (isCurrent) {
       pushToast({
         kind: 'info',
-        title: 'Sign out from the navbar',
-        body: 'Use Sign out to remove this device.',
+        title: 'Use Sign out',
+        body: 'To remove this browser, sign out from the navbar.',
       });
       return;
     }
@@ -78,7 +78,11 @@ export default function DevicesPanel() {
       pushToast({ kind: 'error', title: 'Could not remove device', body: error.message });
       return;
     }
-    pushToast({ kind: 'success', title: 'Device removed' });
+    pushToast({
+      kind: 'success',
+      title: 'Removed from list',
+      body: "That browser stays signed in until it's signed out manually.",
+    });
   };
 
   const isFree = plan !== 'pro';

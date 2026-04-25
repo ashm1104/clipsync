@@ -81,7 +81,9 @@ export default function Settings() {
     if (error) {
       pushToast({ kind: 'error', title: 'Could not save', body: error.message });
       setProfile(profile);
+      return;
     }
+    pushToast({ kind: 'success', title: 'Saved' });
   };
 
   return (

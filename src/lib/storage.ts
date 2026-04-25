@@ -34,3 +34,23 @@ export async function uploadImageToRoom(
 
   return { path, size: file.size };
 }
+
+// Generic file upload (Pro). Accepts PDFs, ZIPs, anything. Bucket is the
+// same `clips` bucket; only the content type / extension differ.
+export async function uploadFileToRoom(
+  file: File,
+  roomId: string,
+  onProgress?: (pct: number) => void
+): Promise<{ path: string; size: number; name: string }> {
+  if (file.size > MAX_IMAGE_SIZE_PRO) throw new Error('FILE_TOO_LARGE');
+  const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
+  const path = `${roomId}/${crypto.randomUUID()}.${ext}`;
+  onProgress?.(10);
+  const { error } = await supabase.storage.from('clips').upload(path, file, {
+    upsert: false,
+    contentType: file.type || 'application/octet-stream',
+  });
+  onProgress?.(100);
+  if (error) throw error;
+  return { path, size: file.size, name: file.name };
+}

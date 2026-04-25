@@ -28,7 +28,7 @@ export default function Room() {
   useNowTicker(1000);
   const { slug = '' } = useParams();
   const navigate = useNavigate();
-  const { room, clips: allClips, loading, notFound, sendText, sendImage } = useRoom(slug);
+  const { room, clips: allClips, loading, notFound, sendText, sendImage, sendFile } = useRoom(slug);
   const myUserId = useAppStore((s) => s.userId);
   const isAnon = useAppStore((s) => s.isAnonymous);
   const unlockKey = room && myUserId ? `clipsync.unlock.${room.id}.${myUserId}` : null;
@@ -143,7 +143,7 @@ export default function Room() {
           {!isRoomExpired && (
             <>
               <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
-              <ImageDrop onImage={sendImage} />
+              <ImageDrop onImage={sendImage} onFile={sendFile} />
             </>
           )}
         </section>

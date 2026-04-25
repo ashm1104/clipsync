@@ -3,6 +3,7 @@ import TextClip from './TextClip';
 import RichClip from './RichClip';
 import CodeClip from './CodeClip';
 import ImageClip from './ImageClip';
+import FileClip from './FileClip';
 import UrlClip from './UrlClip';
 import { supabase } from '../../lib/supabase';
 import { useAppStore } from '../../stores/appStore';
@@ -29,8 +30,9 @@ function renderClip(clip: Clip) {
       return <ImageClip clip={clip} />;
     case 'url':
       return <UrlClip clip={clip} />;
-    case 'text':
     case 'file':
+      return <FileClip clip={clip} />;
+    case 'text':
     default:
       return <TextClip clip={clip} />;
   }

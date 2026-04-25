@@ -4,7 +4,7 @@ import { createUniqueSlug } from '../lib/slug';
 import { detectType, detectLanguage, type ClipType } from '../lib/contentDetector';
 import { setCurrentRoomSlug, addLocalClip } from '../lib/localStorage';
 import { useAppStore } from '../stores/appStore';
-import { uploadImageToRoom } from '../lib/storage';
+import { uploadImageToRoom, uploadFileToRoom } from '../lib/storage';
 import { fetchOg } from '../lib/og';
 
 export type Clip = {
@@ -225,5 +225,43 @@ export function useRoom(initialSlug?: string) {
     [ensureRoom, clips]
   );
 
-  return { room, clips, loading, notFound, ensureRoom, sendText, sendImage, loadBySlug };
+  const sendFile = useCallback(
+    async (file: File, onProgress?: (pct: number) => void) => {
+      const r = await ensureRoom();
+      const { path, size, name } = await uploadFileToRoom(file, r.id, onProgress);
+      const uid = useAppStore.getState().userId;
+      const { data, error } = await supabase
+        .from('clips')
+        .insert({
+          room_id: r.id,
+          user_id: uid,
+          type: 'file',
+          content: path,
+          og_title: name,
+          size_bytes: size,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      if (data) {
+        addLocalClip({
+          id: data.id,
+          roomSlug: r.slug,
+          type: 'file',
+          content: path,
+          og_title: name,
+          size_bytes: size,
+          createdAt: new Date(data.created_at).getTime(),
+        });
+      }
+      useAppStore.getState().pushToast({
+        kind: 'success',
+        title: 'File sent',
+        body: name,
+      });
+    },
+    [ensureRoom]
+  );
+
+  return { room, clips, loading, notFound, ensureRoom, sendText, sendImage, sendFile, loadBySlug };
 }
