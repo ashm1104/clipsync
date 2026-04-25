@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import { useAppStore } from '../../stores/appStore';
 
 type Props = {
   onImage: (file: File, onProgress?: (pct: number) => void) => Promise<void> | void;
@@ -19,6 +20,22 @@ export default function ImageDrop({ onImage }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [safariWarning, setSafariWarning] = useState(false);
   const isSafari = detectSafari();
+  const pushToast = useAppStore((s) => s.pushToast);
+  const openUpgrade = useAppStore((s) => s.openUpgrade);
+
+  const fileGate = useCallback(
+    (file: File): boolean => {
+      if (file.type.startsWith('image/')) return true;
+      pushToast({
+        kind: 'warning',
+        title: 'File sharing is a Pro feature',
+        body: 'Upgrade to send PDFs, ZIPs and more.',
+      });
+      openUpgrade('file_upload');
+      return false;
+    },
+    [pushToast, openUpgrade]
+  );
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -41,10 +58,17 @@ export default function ImageDrop({ onImage }: Props) {
     async (e: React.DragEvent) => {
       e.preventDefault();
       setDragOver(false);
-      const file = Array.from(e.dataTransfer.files).find((f) => f.type.startsWith('image/'));
-      if (file) await handleFile(file);
+      const files = Array.from(e.dataTransfer.files);
+      if (files.length === 0) return;
+      const image = files.find((f) => f.type.startsWith('image/'));
+      if (image) {
+        await handleFile(image);
+        return;
+      }
+      // Non-image drop → file_upload Pro gate.
+      fileGate(files[0]);
     },
-    [handleFile]
+    [handleFile, fileGate]
   );
 
   const handlePickClick = useCallback(async () => {

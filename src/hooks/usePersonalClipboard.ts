@@ -25,7 +25,7 @@ export function usePersonalClipboard() {
         .from('personal_clips')
         .select('*')
         .eq('user_id', userId)
-        .order('created_at', { ascending: true })
+        .order('created_at', { ascending: false })
         .limit(50);
       if (!cancelled) setClips((data ?? []) as Clip[]);
     })();
@@ -42,7 +42,7 @@ export function usePersonalClipboard() {
         },
         (payload) => {
           const row = payload.new as Clip;
-          setClips((prev) => (prev.some((c) => c.id === row.id) ? prev : [...prev, row]));
+          setClips((prev) => (prev.some((c) => c.id === row.id) ? prev : [row, ...prev]));
         }
       )
       .on(

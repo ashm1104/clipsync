@@ -13,6 +13,10 @@ type Props = {
   // Which table the clip lives in. Default 'clips' (rooms). Personal Sync
   // feeds should pass 'personal_clips' instead.
   source?: 'clips' | 'personal_clips';
+  // When set, clips with created_at older than this ms-since-epoch cutoff
+  // render in a ghost-blurred state with an Upgrade chip. Used for the
+  // 30-day-history Pro gate on free Personal Sync.
+  blurOlderThan?: number | null;
 };
 
 function renderClip(clip: Clip) {
@@ -32,9 +36,18 @@ function renderClip(clip: Clip) {
   }
 }
 
-function ClipRow({ clip, source }: { clip: Clip; source: 'clips' | 'personal_clips' }) {
+function ClipRow({
+  clip,
+  source,
+  blurred,
+}: {
+  clip: Clip;
+  source: 'clips' | 'personal_clips';
+  blurred: boolean;
+}) {
   const myUserId = useAppStore((s) => s.userId);
   const pushToast = useAppStore((s) => s.pushToast);
+  const openUpgrade = useAppStore((s) => s.openUpgrade);
   const canDelete = !!myUserId && clip.user_id === myUserId;
 
   const handleDelete = async () => {
@@ -48,8 +61,34 @@ function ClipRow({ clip, source }: { clip: Clip; source: 'clips' | 'personal_cli
 
   return (
     <div className="group relative">
-      {renderClip(clip)}
-      {canDelete && (
+      <div
+        style={
+          blurred
+            ? { filter: 'blur(4px) grayscale(0.4)', pointerEvents: 'none', userSelect: 'none' }
+            : undefined
+        }
+      >
+        {renderClip(clip)}
+      </div>
+      {blurred && (
+        <button
+          type="button"
+          onClick={() => openUpgrade('history_30d')}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <span
+            className="rounded-pill px-3 py-1 text-xs font-medium"
+            style={{
+              background: 'var(--amber-light, #FAEEDA)',
+              color: 'var(--amber-text, #633806)',
+              border: '0.5px solid var(--amber-border, #FAC775)',
+            }}
+          >
+            30-day history on Pro · Upgrade →
+          </span>
+        </button>
+      )}
+      {canDelete && !blurred && (
         <button
           type="button"
           onClick={handleDelete}
@@ -68,7 +107,7 @@ function ClipRow({ clip, source }: { clip: Clip; source: 'clips' | 'personal_cli
   );
 }
 
-export default function ClipFeed({ clips, emptyLabel, source = 'clips' }: Props) {
+export default function ClipFeed({ clips, emptyLabel, source = 'clips', blurOlderThan = null }: Props) {
   if (!clips.length) {
     return (
       <div
@@ -81,9 +120,11 @@ export default function ClipFeed({ clips, emptyLabel, source = 'clips' }: Props)
   }
   return (
     <div className="flex flex-col gap-3">
-      {clips.map((c) => (
-        <ClipRow key={c.id} clip={c} source={source} />
-      ))}
+      {clips.map((c) => {
+        const blurred =
+          blurOlderThan != null && new Date(c.created_at).getTime() < blurOlderThan;
+        return <ClipRow key={c.id} clip={c} source={source} blurred={blurred} />;
+      })}
     </div>
   );
 }

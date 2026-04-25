@@ -58,7 +58,7 @@ export function useRoom(initialSlug?: string) {
       .from('clips')
       .select('*')
       .eq('room_id', data.id)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: false });
     setClips((clipRows ?? []) as Clip[]);
     setLoading(false);
     return data as Room;
@@ -84,7 +84,7 @@ export function useRoom(initialSlug?: string) {
         },
         (payload) => {
           const newClip = payload.new as Clip;
-          setClips((prev) => (prev.some((c) => c.id === newClip.id) ? prev : [...prev, newClip]));
+          setClips((prev) => (prev.some((c) => c.id === newClip.id) ? prev : [newClip, ...prev]));
         }
       )
       .on(

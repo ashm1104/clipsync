@@ -53,7 +53,18 @@ export default function Navbar() {
               Sign in
             </button>
           ) : (
-            <button
+            <>
+              <Link
+                to="/settings"
+                className="rounded-btn px-3 py-1.5 text-sm transition-colors"
+                style={{
+                  background: 'transparent',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                Settings
+              </Link>
+              <button
               type="button"
               onClick={handleSignOut}
               className="rounded-btn px-3 py-1.5 text-sm transition-colors"
@@ -65,6 +76,7 @@ export default function Navbar() {
             >
               Sign out
             </button>
+            </>
           )}
         </nav>
       </div>

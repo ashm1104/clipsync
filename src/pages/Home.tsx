@@ -8,13 +8,18 @@ import ClipFeed from '../components/clips/ClipFeed';
 import TimerCard from '../components/room/TimerCard';
 import HistoryStrip from '../components/room/HistoryStrip';
 import MyRoomsPanel from '../components/room/MyRoomsPanel';
+import DevicesPanel from '../components/room/DevicesPanel';
+import { useDeviceRegistration } from '../hooks/useDeviceRegistration';
 import AmberBanner from '../components/room/AmberBanner';
 import ExpiredRoomCard from '../components/room/ExpiredRoomCard';
 import { clearCurrentRoomSlug } from '../lib/localStorage';
 import { useRoom } from '../hooks/useRoom';
 import { usePersonalClipboard } from '../hooks/usePersonalClipboard';
 import { useAnonAuth } from '../hooks/useAnonAuth';
+import { useRoomTimer } from '../hooks/useTimer';
 import { useAppStore } from '../stores/appStore';
+
+const AMBER_NUDGE_KEY = 'clipsync.amberNudgeShown';
 
 function useNowTicker(intervalMs = 5000) {
   const [, setN] = useState(0);
@@ -28,8 +33,22 @@ function AnonHome() {
   useNowTicker(1000);
   const { room, clips: allClips, sendText, sendImage } = useRoom();
   const myUserId = useAppStore((s) => s.userId);
+  const isAnon = useAppStore((s) => s.isAnonymous);
+  const openSignIn = useAppStore((s) => s.openSignIn);
   const expiresAtMs = room ? new Date(room.expires_at).getTime() : null;
   const isRoomExpired = expiresAtMs != null && expiresAtMs <= Date.now();
+  const { state: timerState } = useRoomTimer(expiresAtMs);
+
+  // Spec §8: when timer turns amber AND user has content AND is anon,
+  // auto-open the SignInModal once per session as the conversion nudge.
+  useEffect(() => {
+    if (!isAnon) return;
+    if (allClips.length === 0) return;
+    if (timerState !== 'amber' && timerState !== 'red') return;
+    if (sessionStorage.getItem(AMBER_NUDGE_KEY)) return;
+    sessionStorage.setItem(AMBER_NUDGE_KEY, '1');
+    openSignIn();
+  }, [isAnon, allClips.length, timerState, openSignIn]);
   // Feed shows clips from OTHERS only; own sent clips live in history sidebar.
   // Clips are hidden once the room itself expires.
   const clips = isRoomExpired
@@ -176,7 +195,9 @@ function JoinRoomCard() {
 }
 
 function LoggedInHome() {
+  useDeviceRegistration();
   const { clips, sendText, sendImage } = usePersonalClipboard();
+  const plan = useAppStore((s) => s.plan);
 
   return (
     <main
@@ -205,13 +226,18 @@ function LoggedInHome() {
         </div>
         <PasteArea onSend={sendText} onImagePaste={sendImage} live />
         <ImageDrop onImage={sendImage} />
-        <ClipFeed clips={clips} source="personal_clips" />
+        <ClipFeed
+          clips={clips}
+          source="personal_clips"
+          blurOlderThan={plan === 'pro' ? null : Date.now() - 24 * 60 * 60 * 1000}
+        />
       </section>
 
       <aside className="flex flex-col gap-[18px]">
         <NewRoomCard />
         <JoinRoomCard />
         <MyRoomsPanel />
+        <DevicesPanel />
       </aside>
     </main>
   );
