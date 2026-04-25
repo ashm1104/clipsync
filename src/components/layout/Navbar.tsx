@@ -12,6 +12,11 @@ export default function Navbar() {
   const handleSignOut = async () => {
     clearLocalClips();
     clearCurrentRoomSlug();
+    // Clear per-room password unlocks so a new visitor must re-enter.
+    for (let i = sessionStorage.length - 1; i >= 0; i--) {
+      const k = sessionStorage.key(i);
+      if (k && k.startsWith('clipsync.unlock.')) sessionStorage.removeItem(k);
+    }
     await supabase.auth.signOut();
     pushToast({ kind: 'info', title: 'Signed out' });
     // Full reload: resets room state, current-room slug, clip feed, and

@@ -31,12 +31,13 @@ export default function Room() {
   const { room, clips: allClips, loading, notFound, sendText, sendImage } = useRoom(slug);
   const myUserId = useAppStore((s) => s.userId);
   const isAnon = useAppStore((s) => s.isAnonymous);
-  const unlockKey = room ? `clipsync.unlock.${room.id}` : null;
+  const unlockKey = room && myUserId ? `clipsync.unlock.${room.id}.${myUserId}` : null;
   const [unlocked, setUnlocked] = useState<boolean>(() =>
     unlockKey ? sessionStorage.getItem(unlockKey) === '1' : false
   );
   useEffect(() => {
     if (unlockKey) setUnlocked(sessionStorage.getItem(unlockKey) === '1');
+    else setUnlocked(false);
   }, [unlockKey]);
 
   if (loading) {

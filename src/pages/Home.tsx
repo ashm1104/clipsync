@@ -138,11 +138,13 @@ function NewRoomCard() {
 
 function JoinRoomCard() {
   const [code, setCode] = useState('');
-  const navigate = useNavigate();
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const c = code.trim().toLowerCase();
-    if (c.length >= 3) navigate(`/r/${c}`);
+    if (c.length >= 3) {
+      window.open(`/r/${c}`, '_blank', 'noopener,noreferrer');
+      setCode('');
+    }
   };
   return (
     <form
