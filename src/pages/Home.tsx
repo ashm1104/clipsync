@@ -7,6 +7,7 @@ import RoomCard from '../components/room/RoomCard';
 import ClipFeed from '../components/clips/ClipFeed';
 import TimerCard from '../components/room/TimerCard';
 import HistoryStrip from '../components/room/HistoryStrip';
+import MyRoomsPanel from '../components/room/MyRoomsPanel';
 import AmberBanner from '../components/room/AmberBanner';
 import ExpiredRoomCard from '../components/room/ExpiredRoomCard';
 import { clearCurrentRoomSlug } from '../lib/localStorage';
@@ -40,7 +41,7 @@ function AnonHome() {
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
     const code = joinCode.trim().toLowerCase();
-    if (code.length === 6) navigate(`/r/${code}`);
+    if (code.length >= 3) navigate(`/r/${code}`);
   };
 
   return (
@@ -72,15 +73,15 @@ function AnonHome() {
           <span className="text-sm text-text-secondary">Have a code?</span>
           <input
             value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value)}
-            placeholder="6 chars"
-            maxLength={6}
+            onChange={(e) => setJoinCode(e.target.value.replace(/[^a-z0-9-]/gi, ''))}
+            placeholder="code or custom"
+            maxLength={50}
             className="flex-1 bg-transparent font-mono text-sm outline-none placeholder:text-text-tertiary"
             style={{ letterSpacing: '0.1em', color: 'var(--text-primary)' }}
           />
           <button
             type="submit"
-            disabled={joinCode.trim().length !== 6}
+            disabled={joinCode.trim().length < 3}
             className="rounded-btn px-3 py-1.5 text-sm transition-colors disabled:opacity-40"
             style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)' }}
           >
@@ -135,6 +136,43 @@ function NewRoomCard() {
   );
 }
 
+function JoinRoomCard() {
+  const [code, setCode] = useState('');
+  const navigate = useNavigate();
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const c = code.trim().toLowerCase();
+    if (c.length >= 3) navigate(`/r/${c}`);
+  };
+  return (
+    <form
+      onSubmit={submit}
+      className="rounded-card p-4"
+      style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border-default)' }}
+    >
+      <div className="text-xs uppercase tracking-wider text-text-tertiary">Join room</div>
+      <div className="mt-2 flex items-center gap-2">
+        <input
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/[^a-z0-9-]/gi, ''))}
+          placeholder="code or custom"
+          maxLength={50}
+          className="flex-1 rounded-btn bg-bg-surface px-2 py-1.5 font-mono text-sm outline-none placeholder:text-text-tertiary"
+          style={{ border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)', letterSpacing: '0.05em' }}
+        />
+        <button
+          type="submit"
+          disabled={code.trim().length < 3}
+          className="rounded-btn px-3 py-1.5 text-sm transition-colors disabled:opacity-40"
+          style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+        >
+          Join
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function LoggedInHome() {
   const { clips, sendText, sendImage } = usePersonalClipboard();
 
@@ -165,11 +203,13 @@ function LoggedInHome() {
         </div>
         <PasteArea onSend={sendText} onImagePaste={sendImage} live />
         <ImageDrop onImage={sendImage} />
-        <ClipFeed clips={clips} />
+        <ClipFeed clips={clips} source="personal_clips" />
       </section>
 
       <aside className="flex flex-col gap-[18px]">
         <NewRoomCard />
+        <JoinRoomCard />
+        <MyRoomsPanel />
       </aside>
     </main>
   );

@@ -118,7 +118,7 @@ export default function CreateRoomModal() {
                     border: `0.5px solid ${selected ? '#3B6D11' : 'var(--border-subtle)'}`,
                     color: locked ? 'var(--text-tertiary)' : 'var(--text-primary)',
                     opacity: locked ? 0.55 : 1,
-                    cursor: locked ? 'not-allowed' : 'pointer',
+                    cursor: 'pointer',
                   }}
                 >
                   {o.label}

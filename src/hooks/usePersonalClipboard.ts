@@ -45,6 +45,20 @@ export function usePersonalClipboard() {
           setClips((prev) => (prev.some((c) => c.id === row.id) ? prev : [...prev, row]));
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'personal_clips',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          const oldId = (payload.old as { id?: string } | null)?.id;
+          if (!oldId) return;
+          setClips((prev) => prev.filter((c) => c.id !== oldId));
+        }
+      )
       .subscribe();
 
     return () => {

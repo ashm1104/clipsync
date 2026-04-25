@@ -100,8 +100,13 @@ export default function HistoryStrip({ expiresAtMs }: Props) {
                   type="button"
                   onClick={() => handleDelete(c.id)}
                   aria-label="Remove from history"
-                  className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
-                  style={{ color: 'var(--text-tertiary)' }}
+                  title="Remove"
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-btn text-sm leading-none transition-colors hover:text-text-primary"
+                  style={{
+                    background: 'var(--bg-surface)',
+                    border: '0.5px solid var(--border-subtle)',
+                    color: 'var(--text-secondary)',
+                  }}
                 >
                   ×
                 </button>
