@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAppStore } from '../../stores/appStore';
 import { supabase } from '../../lib/supabase';
 import { clearCurrentRoomSlug, clearLocalClips } from '../../lib/localStorage';
-import { getClientId } from '../../hooks/useDeviceRegistration';
+import { getCurrentSessionId } from '../../hooks/useDeviceRegistration';
 
 export default function Navbar() {
   const openSignIn = useAppStore((s) => s.openSignIn);
@@ -13,12 +13,14 @@ export default function Navbar() {
   const handleSignOut = async () => {
     // Unregister this browser from the devices list before the JWT goes away.
     if (userId) {
-      const clientId = getClientId();
-      await supabase
-        .from('devices')
-        .delete()
-        .eq('user_id', userId)
-        .eq('client_id', clientId);
+      const sessionId = await getCurrentSessionId();
+      if (sessionId) {
+        await supabase
+          .from('devices')
+          .delete()
+          .eq('user_id', userId)
+          .eq('session_id', sessionId);
+      }
     }
     clearLocalClips();
     clearCurrentRoomSlug();

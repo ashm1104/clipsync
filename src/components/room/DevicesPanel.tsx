@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAppStore } from '../../stores/appStore';
-import { getClientId } from '../../hooks/useDeviceRegistration';
+import { getCurrentSessionId } from '../../hooks/useDeviceRegistration';
 
 type DeviceRow = {
   id: string;
-  client_id: string;
+  session_id: string;
   name: string;
   last_seen_at: string;
   created_at: string;
@@ -27,7 +27,17 @@ export default function DevicesPanel() {
   const openUpgrade = useAppStore((s) => s.openUpgrade);
   const pushToast = useAppStore((s) => s.pushToast);
   const [rows, setRows] = useState<DeviceRow[]>([]);
-  const here = getClientId();
+  const [hereSessionId, setHereSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getCurrentSessionId().then((sid) => {
+      if (!cancelled) setHereSessionId(sid);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -35,7 +45,7 @@ export default function DevicesPanel() {
     (async () => {
       const { data } = await supabase
         .from('devices')
-        .select('id,client_id,name,last_seen_at,created_at')
+        .select('id,session_id,name,last_seen_at,created_at')
         .eq('user_id', userId)
         .order('last_seen_at', { ascending: false });
       if (!cancelled) setRows((data ?? []) as DeviceRow[]);
@@ -47,13 +57,21 @@ export default function DevicesPanel() {
         { event: '*', schema: 'public', table: 'devices', filter: `user_id=eq.${userId}` },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setRows((prev) => [payload.new as DeviceRow, ...prev]);
+            setRows((prev) =>
+              prev.some((r) => r.id === (payload.new as DeviceRow).id)
+                ? prev
+                : [payload.new as DeviceRow, ...prev]
+            );
           } else if (payload.eventType === 'DELETE') {
             const old = (payload.old as DeviceRow | null)?.id;
             if (old) setRows((prev) => prev.filter((r) => r.id !== old));
           } else if (payload.eventType === 'UPDATE') {
             const next = payload.new as DeviceRow;
-            setRows((prev) => prev.map((r) => (r.id === next.id ? next : r)));
+            setRows((prev) =>
+              prev
+                .map((r) => (r.id === next.id ? next : r))
+                .sort((a, b) => +new Date(b.last_seen_at) - +new Date(a.last_seen_at))
+            );
           }
         }
       )
@@ -85,8 +103,24 @@ export default function DevicesPanel() {
     });
   };
 
+  // Bump current device to top of last_seen, displacing the oldest active one.
+  const claimSync = async () => {
+    if (!userId || !hereSessionId) return;
+    const { error } = await supabase
+      .from('devices')
+      .update({ last_seen_at: new Date().toISOString() })
+      .eq('user_id', userId)
+      .eq('session_id', hereSessionId);
+    if (error) {
+      pushToast({ kind: 'error', title: 'Could not switch device', body: error.message });
+      return;
+    }
+    pushToast({ kind: 'success', title: 'Sync moved to this device' });
+  };
+
   const isFree = plan !== 'pro';
-  const overCap = isFree && rows.length >= 2;
+  const activeSessionIds = new Set(rows.slice(0, isFree ? 2 : rows.length).map((r) => r.session_id));
+  const hereIsActive = hereSessionId ? activeSessionIds.has(hereSessionId) : true;
 
   return (
     <div
@@ -100,7 +134,7 @@ export default function DevicesPanel() {
             className="rounded-pill px-1.5 py-0.5 text-[10px]"
             style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}
           >
-            {rows.length}/2 free
+            {Math.min(rows.length, 2)}/2 syncing
           </span>
         )}
       </div>
@@ -112,12 +146,16 @@ export default function DevicesPanel() {
       ) : (
         <ul className="mt-2 flex flex-col gap-1">
           {rows.map((d) => {
-            const isCurrent = d.client_id === here;
+            const isCurrent = d.session_id === hereSessionId;
+            const isSyncing = !isFree || activeSessionIds.has(d.session_id);
             return (
               <li
                 key={d.id}
                 className="group flex items-center justify-between gap-2 rounded-btn px-2 py-1.5"
-                style={{ background: isCurrent ? 'var(--green-light, #EAF3DE)' : 'transparent' }}
+                style={{
+                  background: isCurrent ? 'var(--green-light, #EAF3DE)' : 'transparent',
+                  opacity: isSyncing ? 1 : 0.55,
+                }}
               >
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate text-sm" style={{ color: 'var(--text-primary)' }}>
@@ -128,6 +166,14 @@ export default function DevicesPanel() {
                         style={{ background: '#3B6D11', color: 'white' }}
                       >
                         This
+                      </span>
+                    )}
+                    {!isSyncing && (
+                      <span
+                        className="ml-2 rounded-pill px-1 py-0.5 text-[9px] uppercase"
+                        style={{ background: 'var(--amber-light, #FAEEDA)', color: 'var(--amber-text, #633806)' }}
+                      >
+                        Paused
                       </span>
                     )}
                   </span>
@@ -151,18 +197,29 @@ export default function DevicesPanel() {
         </ul>
       )}
 
-      {overCap && (
+      {isFree && !hereIsActive && (
+        <button
+          type="button"
+          onClick={claimSync}
+          className="mt-3 w-full rounded-btn px-3 py-2 text-xs font-medium text-white transition-colors"
+          style={{ background: '#3B6D11' }}
+        >
+          Use this device for sync
+        </button>
+      )}
+
+      {isFree && rows.length > 2 && (
         <button
           type="button"
           onClick={() => openUpgrade('third_device')}
-          className="mt-3 w-full rounded-btn px-3 py-2 text-xs transition-colors"
+          className="mt-2 w-full rounded-btn px-3 py-2 text-xs transition-colors"
           style={{
             background: 'var(--amber-light, #FAEEDA)',
             border: '0.5px solid var(--amber-border, #FAC775)',
             color: 'var(--amber-text, #633806)',
           }}
         >
-          Pro syncs unlimited devices →
+          Pro syncs all your devices →
         </button>
       )}
     </div>
