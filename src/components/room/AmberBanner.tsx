@@ -6,6 +6,7 @@ type Props = { expiresAtMs: number | null };
 export default function AmberBanner({ expiresAtMs }: Props) {
   const isAnon = useAppStore((s) => s.isAnonymous);
   const openSignIn = useAppStore((s) => s.openSignIn);
+  const openUpgrade = useAppStore((s) => s.openUpgrade);
   const { state, label } = useRoomTimer(expiresAtMs);
 
   if (!isAnon || expiresAtMs == null) return null;
@@ -22,7 +23,23 @@ export default function AmberBanner({ expiresAtMs }: Props) {
       role="alert"
     >
       <div className="text-sm">
-        Your room expires in <strong>{label}</strong>. Sign in free to save it forever.
+        Your room expires in <strong>{label}</strong>.{' '}
+        <button
+          type="button"
+          onClick={openSignIn}
+          className="font-medium underline underline-offset-2"
+        >
+          Sign in free
+        </button>{' '}
+        for unlimited time, history across devices, and no countdown — or{' '}
+        <button
+          type="button"
+          onClick={() => openUpgrade('default')}
+          className="font-medium underline underline-offset-2"
+        >
+          see what Pro adds
+        </button>
+        .
       </div>
       <button
         type="button"

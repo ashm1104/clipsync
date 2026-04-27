@@ -129,23 +129,31 @@ export default function Room() {
 
           {isAnon && <AmberBanner expiresAtMs={expiresAtMs} />}
 
-          <ClipFeed
-            clips={feed}
-            emptyLabel={isRoomExpired ? 'Room expired.' : 'Waiting for the first clip…'}
-          />
-
           {!isRoomExpired && (
             <>
               <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
               <ImageDrop onImage={sendImage} onFile={sendFile} />
             </>
           )}
+
+          <ClipFeed
+            clips={feed}
+            emptyLabel={isRoomExpired ? 'Room expired.' : 'Waiting for the first clip…'}
+          />
         </section>
 
         <aside className="flex flex-col gap-[18px]">
-          <RoomCard slug={room ? (room.custom_slug ?? room.slug) : null} />
+          <RoomCard
+            slug={room ? (room.custom_slug ?? room.slug) : null}
+            roomId={room?.id}
+            ownerId={room?.owner_id}
+            onDeleted={() => navigate('/')}
+          />
           <TimerCard expiresAtMs={expiresAtMs} />
-          <HistoryStrip expiresAtMs={expiresAtMs} />
+          <HistoryStrip
+            expiresAtMs={expiresAtMs}
+            roomSlugs={[room?.slug, room?.custom_slug]}
+          />
         </aside>
       </main>
     </div>

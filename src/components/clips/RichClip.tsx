@@ -2,7 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import type { Clip } from '../../hooks/useRoom';
 
-export default function RichClip({ clip }: { clip: Clip }) {
+export default function RichClip({ clip, onDelete }: { clip: Clip; onDelete?: () => void }) {
   const editor = useEditor({
     extensions: [StarterKit],
     content: clip.content ?? '',
@@ -25,14 +25,28 @@ export default function RichClip({ clip }: { clip: Clip }) {
         >
           rich text
         </span>
-        <button
-          type="button"
-          onClick={copy}
-          className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
-          style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
-        >
-          Copy HTML
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={copy}
+            className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
+            style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+          >
+            Copy HTML
+          </button>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              aria-label="Delete clip"
+              title="Delete"
+              className="flex h-[26px] w-[26px] items-center justify-center rounded-btn text-sm leading-none text-text-tertiary transition-colors hover:text-text-primary"
+              style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
       <div className="tiptap-rich text-sm" style={{ color: 'var(--text-primary)' }}>
         <EditorContent editor={editor} />

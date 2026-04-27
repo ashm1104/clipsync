@@ -6,6 +6,7 @@ import ImageClip from './ImageClip';
 import FileClip from './FileClip';
 import UrlClip from './UrlClip';
 import { supabase } from '../../lib/supabase';
+import { removeLocalClip } from '../../lib/localStorage';
 import { useAppStore } from '../../stores/appStore';
 
 type Props = {
@@ -20,21 +21,21 @@ type Props = {
   blurOlderThan?: number | null;
 };
 
-function renderClip(clip: Clip) {
+function renderClip(clip: Clip, onDelete?: () => void) {
   switch (clip.type) {
     case 'rich_text':
-      return <RichClip clip={clip} />;
+      return <RichClip clip={clip} onDelete={onDelete} />;
     case 'code':
-      return <CodeClip clip={clip} />;
+      return <CodeClip clip={clip} onDelete={onDelete} />;
     case 'image':
-      return <ImageClip clip={clip} />;
+      return <ImageClip clip={clip} onDelete={onDelete} />;
     case 'url':
-      return <UrlClip clip={clip} />;
+      return <UrlClip clip={clip} onDelete={onDelete} />;
     case 'file':
-      return <FileClip clip={clip} />;
+      return <FileClip clip={clip} onDelete={onDelete} />;
     case 'text':
     default:
-      return <TextClip clip={clip} />;
+      return <TextClip clip={clip} onDelete={onDelete} />;
   }
 }
 
@@ -53,6 +54,7 @@ function ClipRow({
   const canDelete = !!myUserId && clip.user_id === myUserId;
 
   const handleDelete = async () => {
+    removeLocalClip(clip.id);
     const { error } = await supabase.from(source).delete().eq('id', clip.id);
     if (error) {
       pushToast({ kind: 'error', title: 'Could not delete', body: error.message });
@@ -62,7 +64,7 @@ function ClipRow({
   };
 
   return (
-    <div className="group relative">
+    <div className="relative">
       <div
         style={
           blurred
@@ -70,7 +72,7 @@ function ClipRow({
             : undefined
         }
       >
-        {renderClip(clip)}
+        {renderClip(clip, canDelete && !blurred ? handleDelete : undefined)}
       </div>
       {blurred && (
         <button
@@ -88,21 +90,6 @@ function ClipRow({
           >
             30-day history on Pro · Upgrade →
           </span>
-        </button>
-      )}
-      {canDelete && !blurred && (
-        <button
-          type="button"
-          onClick={handleDelete}
-          aria-label="Delete clip"
-          className="absolute right-2 top-2 rounded-btn px-2 py-1 text-xs opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
-          style={{
-            background: 'var(--bg-card)',
-            border: '0.5px solid var(--border-default)',
-            color: 'var(--text-secondary)',
-          }}
-        >
-          Delete
         </button>
       )}
     </div>

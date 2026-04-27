@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { codeToHtml } from 'shiki';
 import type { Clip } from '../../hooks/useRoom';
 
-export default function CodeClip({ clip }: { clip: Clip }) {
+export default function CodeClip({ clip, onDelete }: { clip: Clip; onDelete?: () => void }) {
   const [html, setHtml] = useState<string>('');
   const lang = clip.language || 'plaintext';
 
@@ -40,14 +40,28 @@ export default function CodeClip({ clip }: { clip: Clip }) {
         >
           code · {lang}
         </span>
-        <button
-          type="button"
-          onClick={copy}
-          className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
-          style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
-        >
-          Copy
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={copy}
+            className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
+            style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+          >
+            Copy
+          </button>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              aria-label="Delete clip"
+              title="Delete"
+              className="flex h-[26px] w-[26px] items-center justify-center rounded-btn text-sm leading-none text-text-tertiary transition-colors hover:text-text-primary"
+              style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
       {html ? (
         <div

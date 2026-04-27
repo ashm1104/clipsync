@@ -1,6 +1,6 @@
 import type { Clip } from '../../hooks/useRoom';
 
-type Props = { clip: Clip };
+type Props = { clip: Clip; onDelete?: () => void };
 
 const PILLS: Record<string, { bg: string; color: string; label: string }> = {
   text: { bg: 'var(--bg-raised)', color: 'var(--text-secondary)', label: 'text' },
@@ -11,7 +11,7 @@ const PILLS: Record<string, { bg: string; color: string; label: string }> = {
   file: { bg: 'var(--bg-raised)', color: 'var(--text-secondary)', label: 'file' },
 };
 
-export default function TextClip({ clip }: Props) {
+export default function TextClip({ clip, onDelete }: Props) {
   const pill = PILLS[clip.type] ?? PILLS.text;
   const mono = clip.type === 'code';
 
@@ -32,14 +32,28 @@ export default function TextClip({ clip }: Props) {
           {pill.label}
           {clip.language && clip.type === 'code' ? ` · ${clip.language}` : ''}
         </span>
-        <button
-          type="button"
-          onClick={copy}
-          className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
-          style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
-        >
-          Copy
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={copy}
+            className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
+            style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+          >
+            Copy
+          </button>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              aria-label="Delete clip"
+              title="Delete"
+              className="flex h-[26px] w-[26px] items-center justify-center rounded-btn text-sm leading-none text-text-tertiary transition-colors hover:text-text-primary"
+              style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
       <pre
         className={`whitespace-pre-wrap break-words text-sm ${mono ? 'font-mono' : 'font-sans'}`}

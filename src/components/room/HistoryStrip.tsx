@@ -13,7 +13,14 @@ const TYPE_LABEL: Record<string, string> = {
   file: 'file',
 };
 
-type Props = { expiresAtMs: number | null };
+type Props = {
+  expiresAtMs: number | null;
+  // Slugs the current room is reachable by. Local clips are filtered to
+  // those whose roomSlug matches one of these — keeps history scoped to
+  // the room you're looking at, even if multiple anon rooms exist in the
+  // same browser's localStorage.
+  roomSlugs?: (string | null | undefined)[];
+};
 
 function Swatch({ type }: { type: string }) {
   const bg =
@@ -34,8 +41,14 @@ function Swatch({ type }: { type: string }) {
   );
 }
 
-export default function HistoryStrip({ expiresAtMs }: Props) {
-  const clips = useLocalClips();
+export default function HistoryStrip({ expiresAtMs, roomSlugs }: Props) {
+  const allClips = useLocalClips();
+  const validSlugs = (roomSlugs ?? []).filter(Boolean) as string[];
+  // No slug yet (e.g. fresh tab before a room is created): show nothing,
+  // not the whole localStorage history. Otherwise filter to this room only.
+  const clips = validSlugs.length
+    ? allClips.filter((c) => validSlugs.includes(c.roomSlug))
+    : [];
   const { state, label } = useRoomTimer(expiresAtMs);
   const pushToast = useAppStore((s) => s.pushToast);
 
@@ -47,6 +60,18 @@ export default function HistoryStrip({ expiresAtMs }: Props) {
       return;
     }
     pushToast({ kind: 'success', title: 'Removed from history' });
+  };
+
+  const handleClearAll = async () => {
+    const ids = clips.map((c) => c.id);
+    if (!ids.length) return;
+    ids.forEach(removeLocalClip);
+    const { error } = await supabase.from('clips').delete().in('id', ids);
+    if (error) {
+      pushToast({ kind: 'error', title: 'Could not clear', body: error.message });
+      return;
+    }
+    pushToast({ kind: 'success', title: 'History cleared' });
   };
 
   const timerColor =
@@ -63,13 +88,25 @@ export default function HistoryStrip({ expiresAtMs }: Props) {
       className="rounded-card p-4"
       style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border-default)' }}
     >
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between gap-2">
         <span className="text-xs uppercase tracking-wider text-text-tertiary">History</span>
-        {expiresAtMs != null && (
-          <span className="text-xs" style={{ color: timerColor }}>
-            {state === 'expired' ? 'expired' : label}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {clips.length > 0 && (
+            <button
+              type="button"
+              onClick={handleClearAll}
+              className="text-[11px] underline-offset-2 transition-colors hover:underline"
+              style={{ color: 'var(--text-tertiary)' }}
+            >
+              Clear
+            </button>
+          )}
+          {expiresAtMs != null && (
+            <span className="text-xs" style={{ color: timerColor }}>
+              {state === 'expired' ? 'expired' : label}
+            </span>
+          )}
+        </div>
       </div>
       {clips.length === 0 ? (
         <div className="text-xs text-text-tertiary">

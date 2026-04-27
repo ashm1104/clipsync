@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { Clip } from '../../hooks/useRoom';
 import { publicImageUrl } from '../../lib/storage';
 
-export default function ImageClip({ clip }: { clip: Clip }) {
+export default function ImageClip({ clip, onDelete }: { clip: Clip; onDelete?: () => void }) {
   const src = useMemo(() => (clip.content ? publicImageUrl(clip.content) : ''), [clip.content]);
 
   const sizeKb = clip.size_bytes ? Math.round(clip.size_bytes / 1024) : null;
@@ -19,15 +19,29 @@ export default function ImageClip({ clip }: { clip: Clip }) {
         >
           image{sizeKb ? ` · ${sizeKb} KB` : ''}
         </span>
-        <a
-          href={src}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
-          style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
-        >
-          Open
-        </a>
+        <div className="flex items-center gap-1">
+          <a
+            href={src}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
+            style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+          >
+            Open
+          </a>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              aria-label="Delete clip"
+              title="Delete"
+              className="flex h-[26px] w-[26px] items-center justify-center rounded-btn text-sm leading-none text-text-tertiary transition-colors hover:text-text-primary"
+              style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
       <div
         className="overflow-hidden rounded-btn"

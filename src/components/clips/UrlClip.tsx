@@ -20,7 +20,7 @@ function faviconUrl(url: string | null): string | null {
   }
 }
 
-export default function UrlClip({ clip }: { clip: Clip }) {
+export default function UrlClip({ clip, onDelete }: { clip: Clip; onDelete?: () => void }) {
   const host = useMemo(() => hostname(clip.content), [clip.content]);
   const favicon = useMemo(() => faviconUrl(clip.content), [clip.content]);
   const hasPreview = !!(clip.og_title || clip.og_desc || clip.og_image);
@@ -65,6 +65,18 @@ export default function UrlClip({ clip }: { clip: Clip }) {
           >
             Open link
           </a>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              aria-label="Delete clip"
+              title="Delete"
+              className="flex h-[26px] w-[26px] items-center justify-center rounded-btn text-sm leading-none text-text-tertiary transition-colors hover:text-text-primary"
+              style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+            >
+              ×
+            </button>
+          )}
         </div>
       </div>
 

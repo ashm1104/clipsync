@@ -1,7 +1,7 @@
 import type { Clip } from '../../hooks/useRoom';
 import { publicImageUrl } from '../../lib/storage';
 
-export default function FileClip({ clip }: { clip: Clip }) {
+export default function FileClip({ clip, onDelete }: { clip: Clip; onDelete?: () => void }) {
   const href = clip.content ? publicImageUrl(clip.content) : '';
   const name = clip.og_title || clip.content?.split('/').pop() || 'file';
   const sizeKb = clip.size_bytes ? Math.round(clip.size_bytes / 1024) : null;
@@ -27,16 +27,30 @@ export default function FileClip({ clip }: { clip: Clip }) {
             {name}
           </span>
         </div>
-        <a
-          href={href}
-          target="_blank"
-          rel="noreferrer noopener"
-          download={name}
-          className="shrink-0 rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
-          style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
-        >
-          Download
-        </a>
+        <div className="flex items-center gap-1">
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer noopener"
+            download={name}
+            className="shrink-0 rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
+            style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+          >
+            Download
+          </a>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              aria-label="Delete clip"
+              title="Delete"
+              className="flex h-[26px] w-[26px] items-center justify-center rounded-btn text-sm leading-none text-text-tertiary transition-colors hover:text-text-primary"
+              style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

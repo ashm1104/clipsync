@@ -10,6 +10,7 @@ import HistoryStrip from '../components/room/HistoryStrip';
 import MyRoomsPanel from '../components/room/MyRoomsPanel';
 import DevicesPanel from '../components/room/DevicesPanel';
 import { useDeviceRegistration } from '../hooks/useDeviceRegistration';
+import { supabase } from '../lib/supabase';
 import AmberBanner from '../components/room/AmberBanner';
 import ExpiredRoomCard from '../components/room/ExpiredRoomCard';
 import { clearCurrentRoomSlug } from '../lib/localStorage';
@@ -86,7 +87,7 @@ function AnonHome() {
           className="flex items-center gap-2 rounded-card bg-bg-card px-4 py-3"
           style={{ border: '0.5px solid var(--border-default)' }}
         >
-          <span className="text-sm text-text-secondary">Have a code?</span>
+          <span className="text-sm text-text-secondary">Have a room code?</span>
           <input
             value={joinCode}
             onChange={(e) => setJoinCode(e.target.value.replace(/[^a-z0-9-]/gi, ''))}
@@ -117,9 +118,20 @@ function AnonHome() {
       <aside className="flex flex-col gap-[18px]">
         {!isRoomExpired && (
           <>
-            <RoomCard slug={room?.slug ?? null} />
+            <RoomCard
+              slug={room?.slug ?? null}
+              roomId={room?.id}
+              ownerId={room?.owner_id}
+              onDeleted={() => {
+                clearCurrentRoomSlug();
+                window.location.reload();
+              }}
+            />
             <TimerCard expiresAtMs={expiresAtMs} />
-            <HistoryStrip expiresAtMs={expiresAtMs} />
+            <HistoryStrip
+              expiresAtMs={expiresAtMs}
+              roomSlugs={[room?.slug, room?.custom_slug]}
+            />
           </>
         )}
       </aside>
@@ -195,6 +207,19 @@ function LoggedInHome() {
   useDeviceRegistration();
   const { clips, sendText, sendImage, sendFile } = usePersonalClipboard();
   const plan = useAppStore((s) => s.plan);
+  const userId = useAppStore((s) => s.userId);
+  const pushToast = useAppStore((s) => s.pushToast);
+
+  const clearAllPersonal = async () => {
+    if (!userId || !clips.length) return;
+    if (!window.confirm('Clear all clips from your Personal Sync? This cannot be undone.')) return;
+    const { error } = await supabase.from('personal_clips').delete().eq('user_id', userId);
+    if (error) {
+      pushToast({ kind: 'error', title: 'Could not clear', body: error.message });
+      return;
+    }
+    pushToast({ kind: 'success', title: 'Personal Sync cleared' });
+  };
 
   return (
     <main
@@ -217,19 +242,34 @@ function LoggedInHome() {
         </div>
         <PasteArea onSend={sendText} onImagePaste={sendImage} live />
         <ImageDrop onImage={sendImage} onFile={sendFile} />
+      </section>
+
+      <aside className="flex flex-col gap-[18px] md:row-span-2 md:col-start-2 md:row-start-1">
+        <NewRoomCard />
+        <JoinRoomCard />
+        <MyRoomsPanel />
+        <DevicesPanel />
+      </aside>
+
+      <section className="flex flex-col gap-[18px] md:col-start-1 md:row-start-2">
+        {clips.length > 0 && (
+          <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-tertiary)' }}>
+            <span>{clips.length} clip{clips.length === 1 ? '' : 's'}</span>
+            <button
+              type="button"
+              onClick={clearAllPersonal}
+              className="underline-offset-2 transition-colors hover:underline"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
         <ClipFeed
           clips={clips}
           source="personal_clips"
           blurOlderThan={plan === 'pro' ? null : Date.now() - 24 * 60 * 60 * 1000}
         />
       </section>
-
-      <aside className="flex flex-col gap-[18px]">
-        <NewRoomCard />
-        <JoinRoomCard />
-        <MyRoomsPanel />
-        <DevicesPanel />
-      </aside>
     </main>
   );
 }
