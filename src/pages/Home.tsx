@@ -68,13 +68,7 @@ function AnonHome() {
 
   return (
     <main
-      className="mx-auto grid"
-      style={{
-        maxWidth: '960px',
-        gridTemplateColumns: '1fr 268px',
-        gap: '18px',
-        padding: '20px 22px',
-      }}
+      className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
     >
       <section className="flex flex-col gap-[18px]">
         {isRoomExpired && (
@@ -204,13 +198,7 @@ function LoggedInHome() {
 
   return (
     <main
-      className="mx-auto grid"
-      style={{
-        maxWidth: '960px',
-        gridTemplateColumns: '1fr 268px',
-        gap: '18px',
-        padding: '20px 22px',
-      }}
+      className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
     >
       <section className="flex flex-col gap-[18px]">
         <div

@@ -43,7 +43,7 @@ export default function Navbar() {
       className="w-full"
       style={{ background: 'var(--bg-page)', borderBottom: '0.5px solid var(--border-subtle)' }}
     >
-      <div className="mx-auto flex max-w-[960px] items-center justify-between px-[22px] py-3">
+      <div className="mx-auto flex max-w-[960px] items-center justify-between px-4 py-3 md:px-[22px]">
         <Link to="/" className="flex items-center gap-2">
           <span
             className="font-mono text-base font-medium"

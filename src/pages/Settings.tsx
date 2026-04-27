@@ -90,22 +90,16 @@ export default function Settings() {
     <div className="min-h-full">
       <Navbar />
       <main
-        className="mx-auto grid"
-        style={{
-          maxWidth: '960px',
-          gridTemplateColumns: '200px 1fr',
-          gap: '18px',
-          padding: '20px 22px',
-        }}
+        className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[200px_1fr] md:px-[22px] md:py-[20px]"
       >
         <aside>
-          <nav className="flex flex-col gap-1">
+          <nav className="-mx-1 flex gap-1 overflow-x-auto px-1 md:flex-col md:overflow-visible">
             {TABS.map((t) => (
               <button
                 key={t.key}
                 type="button"
                 onClick={() => setTab(t.key)}
-                className="rounded-btn px-3 py-2 text-left text-sm transition-colors"
+                className="shrink-0 rounded-btn px-3 py-2 text-sm transition-colors md:text-left"
                 style={{
                   background: tab === t.key ? 'var(--bg-card)' : 'transparent',
                   color: 'var(--text-primary)',

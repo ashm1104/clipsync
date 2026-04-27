@@ -116,13 +116,7 @@ export default function Room() {
     <div className="min-h-full">
       <Navbar />
       <main
-        className="mx-auto grid"
-        style={{
-          maxWidth: '960px',
-          gridTemplateColumns: '1fr 268px',
-          gap: '18px',
-          padding: '20px 22px',
-        }}
+        className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
       >
         <section className="flex flex-col gap-[18px]">
           <div className="flex items-center gap-2 text-sm text-text-secondary">
