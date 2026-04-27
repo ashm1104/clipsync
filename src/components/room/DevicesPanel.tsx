@@ -9,7 +9,10 @@ type DeviceRow = {
   name: string;
   last_seen_at: string;
   created_at: string;
+  is_active: boolean;
 };
+
+const FREE_SLOTS = 2;
 
 function shortAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime();
@@ -45,7 +48,7 @@ export default function DevicesPanel() {
     (async () => {
       const { data } = await supabase
         .from('devices')
-        .select('id,session_id,name,last_seen_at,created_at')
+        .select('id,session_id,name,last_seen_at,created_at,is_active')
         .eq('user_id', userId)
         .order('last_seen_at', { ascending: false });
       if (!cancelled) setRows((data ?? []) as DeviceRow[]);
@@ -57,21 +60,14 @@ export default function DevicesPanel() {
         { event: '*', schema: 'public', table: 'devices', filter: `user_id=eq.${userId}` },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setRows((prev) =>
-              prev.some((r) => r.id === (payload.new as DeviceRow).id)
-                ? prev
-                : [payload.new as DeviceRow, ...prev]
-            );
+            const next = payload.new as DeviceRow;
+            setRows((prev) => (prev.some((r) => r.id === next.id) ? prev : [next, ...prev]));
           } else if (payload.eventType === 'DELETE') {
             const old = (payload.old as DeviceRow | null)?.id;
             if (old) setRows((prev) => prev.filter((r) => r.id !== old));
           } else if (payload.eventType === 'UPDATE') {
             const next = payload.new as DeviceRow;
-            setRows((prev) =>
-              prev
-                .map((r) => (r.id === next.id ? next : r))
-                .sort((a, b) => +new Date(b.last_seen_at) - +new Date(a.last_seen_at))
-            );
+            setRows((prev) => prev.map((r) => (r.id === next.id ? next : r)));
           }
         }
       )
@@ -81,6 +77,11 @@ export default function DevicesPanel() {
       supabase.removeChannel(ch);
     };
   }, [userId]);
+
+  const isFree = plan !== 'pro';
+  const activeRows = rows.filter((r) => r.is_active);
+  const here = hereSessionId ? rows.find((r) => r.session_id === hereSessionId) : undefined;
+  const hereIsActive = !!here?.is_active;
 
   const remove = async (id: string, isCurrent: boolean) => {
     if (isCurrent) {
@@ -103,24 +104,43 @@ export default function DevicesPanel() {
     });
   };
 
-  // Bump current device to top of last_seen, displacing the oldest active one.
-  const claimSync = async () => {
-    if (!userId || !hereSessionId) return;
+  const claimSlot = async () => {
+    if (!userId || !here) return;
+    // Free: if 2 slots are taken, kick the oldest active out.
+    if (isFree && activeRows.length >= FREE_SLOTS) {
+      const oldest = [...activeRows]
+        .filter((r) => r.id !== here.id)
+        .sort((a, b) => +new Date(a.last_seen_at) - +new Date(b.last_seen_at))[0];
+      if (oldest) {
+        const { error } = await supabase
+          .from('devices')
+          .update({ is_active: false })
+          .eq('id', oldest.id);
+        if (error) {
+          pushToast({ kind: 'error', title: 'Could not switch slot', body: error.message });
+          return;
+        }
+      }
+    }
     const { error } = await supabase
       .from('devices')
-      .update({ last_seen_at: new Date().toISOString() })
-      .eq('user_id', userId)
-      .eq('session_id', hereSessionId);
+      .update({ is_active: true, last_seen_at: new Date().toISOString() })
+      .eq('id', here.id);
     if (error) {
-      pushToast({ kind: 'error', title: 'Could not switch device', body: error.message });
+      pushToast({ kind: 'error', title: 'Could not switch slot', body: error.message });
       return;
     }
     pushToast({ kind: 'success', title: 'Sync moved to this device' });
   };
 
-  const isFree = plan !== 'pro';
-  const activeSessionIds = new Set(rows.slice(0, isFree ? 2 : rows.length).map((r) => r.session_id));
-  const hereIsActive = hereSessionId ? activeSessionIds.has(hereSessionId) : true;
+  const pauseDevice = async (id: string) => {
+    const { error } = await supabase.from('devices').update({ is_active: false }).eq('id', id);
+    if (error) {
+      pushToast({ kind: 'error', title: 'Could not pause', body: error.message });
+      return;
+    }
+    pushToast({ kind: 'success', title: 'Slot freed' });
+  };
 
   return (
     <div
@@ -134,7 +154,7 @@ export default function DevicesPanel() {
             className="rounded-pill px-1.5 py-0.5 text-[10px]"
             style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}
           >
-            {Math.min(rows.length, 2)}/2 syncing
+            {activeRows.length}/{FREE_SLOTS} slots
           </span>
         )}
       </div>
@@ -147,14 +167,14 @@ export default function DevicesPanel() {
         <ul className="mt-2 flex flex-col gap-1">
           {rows.map((d) => {
             const isCurrent = d.session_id === hereSessionId;
-            const isSyncing = !isFree || activeSessionIds.has(d.session_id);
+            const isActive = d.is_active;
             return (
               <li
                 key={d.id}
                 className="group flex items-center justify-between gap-2 rounded-btn px-2 py-1.5"
                 style={{
                   background: isCurrent ? 'var(--green-light, #EAF3DE)' : 'transparent',
-                  opacity: isSyncing ? 1 : 0.55,
+                  opacity: isActive ? 1 : 0.6,
                 }}
               >
                 <div className="flex min-w-0 flex-col">
@@ -168,7 +188,7 @@ export default function DevicesPanel() {
                         This
                       </span>
                     )}
-                    {!isSyncing && (
+                    {!isActive && (
                       <span
                         className="ml-2 rounded-pill px-1 py-0.5 text-[9px] uppercase"
                         style={{ background: 'var(--amber-light, #FAEEDA)', color: 'var(--amber-text, #633806)' }}
@@ -181,34 +201,48 @@ export default function DevicesPanel() {
                     {shortAgo(d.last_seen_at)}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => remove(d.id, isCurrent)}
-                  aria-label="Remove device"
-                  title={isCurrent ? 'Sign out from the navbar' : 'Remove'}
-                  className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
-                  style={{ color: 'var(--text-tertiary)' }}
-                >
-                  ×
-                </button>
+                <div className="flex items-center gap-1">
+                  {isActive && !isCurrent && isFree && (
+                    <button
+                      type="button"
+                      onClick={() => pauseDevice(d.id)}
+                      className="rounded-btn px-2 py-0.5 text-[11px] opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                      style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-secondary)' }}
+                    >
+                      Pause
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => remove(d.id, isCurrent)}
+                    aria-label="Remove device"
+                    title={isCurrent ? 'Sign out from the navbar' : 'Remove from list'}
+                    className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                    style={{ color: 'var(--text-tertiary)' }}
+                  >
+                    ×
+                  </button>
+                </div>
               </li>
             );
           })}
         </ul>
       )}
 
-      {isFree && !hereIsActive && (
+      {isFree && here && !hereIsActive && (
         <button
           type="button"
-          onClick={claimSync}
+          onClick={claimSlot}
           className="mt-3 w-full rounded-btn px-3 py-2 text-xs font-medium text-white transition-colors"
           style={{ background: '#3B6D11' }}
         >
-          Use this device for sync
+          {activeRows.length >= FREE_SLOTS
+            ? `Use this device (replace oldest)`
+            : 'Use this device for sync'}
         </button>
       )}
 
-      {isFree && rows.length > 2 && (
+      {isFree && rows.length > FREE_SLOTS && (
         <button
           type="button"
           onClick={() => openUpgrade('third_device')}
