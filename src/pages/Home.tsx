@@ -93,6 +93,22 @@ function AnonHome() {
             }}
           />
         )}
+        {!isRoomExpired && room && (
+          <button
+            type="button"
+            onClick={() => setMobileTab('room')}
+            className="flex items-center justify-between rounded-card bg-bg-card px-4 py-2.5 text-sm md:hidden"
+            style={{ border: '0.5px solid var(--border-default)', color: 'var(--text-secondary)' }}
+          >
+            <span className="flex items-center gap-2">
+              <span className="sync-dot-live" />
+              <span>
+                Live · <span className="font-mono" style={{ letterSpacing: '0.08em', color: 'var(--text-primary)' }}>{room.custom_slug ?? room.slug}</span>
+              </span>
+            </span>
+            <span style={{ color: 'var(--text-tertiary)' }}>Share →</span>
+          </button>
+        )}
         {!isRoomExpired && <AmberBanner expiresAtMs={expiresAtMs} />}
         {!isRoomExpired && (
           <>
@@ -106,26 +122,28 @@ function AnonHome() {
       <aside className={`${showOn('room')} flex-col gap-[18px]`}>
         <form
           onSubmit={handleJoin}
-          className="flex items-center gap-2 rounded-card bg-bg-card px-4 py-3"
+          className="rounded-card bg-bg-card p-4"
           style={{ border: '0.5px solid var(--border-default)' }}
         >
-          <span className="text-sm text-text-secondary">Have a room code?</span>
-          <input
-            value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value.replace(/[^a-z0-9-]/gi, ''))}
-            placeholder="code or custom"
-            maxLength={50}
-            className="flex-1 bg-transparent font-mono text-sm outline-none placeholder:text-text-tertiary"
-            style={{ letterSpacing: '0.1em', color: 'var(--text-primary)' }}
-          />
-          <button
-            type="submit"
-            disabled={joinCode.trim().length < 3}
-            className="rounded-btn px-3 py-1.5 text-sm transition-colors disabled:opacity-40"
-            style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)' }}
-          >
-            Join
-          </button>
+          <div className="text-xs uppercase tracking-wider text-text-tertiary">Join a room</div>
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value.replace(/[^a-z0-9-]/gi, ''))}
+              placeholder="code or custom"
+              maxLength={50}
+              className="min-w-0 flex-1 rounded-btn bg-bg-surface px-2 py-1.5 font-mono text-sm outline-none placeholder:text-text-tertiary"
+              style={{ border: '0.5px solid var(--border-subtle)', letterSpacing: '0.05em', color: 'var(--text-primary)' }}
+            />
+            <button
+              type="submit"
+              disabled={joinCode.trim().length < 3}
+              className="shrink-0 rounded-btn px-3 py-1.5 text-sm transition-colors disabled:opacity-40"
+              style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+            >
+              Join
+            </button>
+          </div>
         </form>
         {!isRoomExpired && (
           <>
