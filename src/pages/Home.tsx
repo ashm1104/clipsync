@@ -9,6 +9,7 @@ import TimerCard from '../components/room/TimerCard';
 import HistoryStrip from '../components/room/HistoryStrip';
 import MyRoomsPanel from '../components/room/MyRoomsPanel';
 import DevicesPanel from '../components/room/DevicesPanel';
+import MobileTabs from '../components/layout/MobileTabs';
 import { useDeviceRegistration } from '../hooks/useDeviceRegistration';
 import { supabase } from '../lib/supabase';
 import AmberBanner from '../components/room/AmberBanner';
@@ -67,11 +68,22 @@ function AnonHome() {
     if (code.length >= 3) navigate(`/r/${code}`);
   };
 
+  const [mobileTab, setMobileTab] = useState<'clipboard' | 'room'>('clipboard');
+  const showOn = (t: 'clipboard' | 'room') =>
+    mobileTab === t ? 'flex' : 'hidden md:flex';
+
   return (
     <main
       className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
     >
-      <section className="flex flex-col gap-[18px]">
+      <MobileTabs
+        tabs={[{ key: 'clipboard', label: 'Clipboard' }, { key: 'room', label: 'Room' }]}
+        active={mobileTab}
+        onChange={(k) => setMobileTab(k as 'clipboard' | 'room')}
+        className="md:col-span-2"
+      />
+
+      <section className={`${showOn('clipboard')} flex-col gap-[18px]`}>
         {isRoomExpired && (
           <ExpiredRoomCard
             slug={room?.slug}
@@ -82,6 +94,16 @@ function AnonHome() {
           />
         )}
         {!isRoomExpired && <AmberBanner expiresAtMs={expiresAtMs} />}
+        {!isRoomExpired && (
+          <>
+            <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
+            <ImageDrop onImage={sendImage} onFile={sendFile} />
+          </>
+        )}
+        {!isRoomExpired && <ClipFeed clips={clips} />}
+      </section>
+
+      <aside className={`${showOn('room')} flex-col gap-[18px]`}>
         <form
           onSubmit={handleJoin}
           className="flex items-center gap-2 rounded-card bg-bg-card px-4 py-3"
@@ -105,17 +127,6 @@ function AnonHome() {
             Join
           </button>
         </form>
-        <div style={{ borderTop: '0.5px solid var(--border-subtle)' }} />
-        {!isRoomExpired && (
-          <>
-            <PasteArea onSend={sendText} onImagePaste={sendImage} live={!!room} />
-            <ImageDrop onImage={sendImage} onFile={sendFile} />
-          </>
-        )}
-        {!isRoomExpired && <ClipFeed clips={clips} />}
-      </section>
-
-      <aside className="flex flex-col gap-[18px]">
         {!isRoomExpired && (
           <>
             <RoomCard
@@ -221,11 +232,25 @@ function LoggedInHome() {
     pushToast({ kind: 'success', title: 'Personal Sync cleared' });
   };
 
+  const [mobileTab, setMobileTab] = useState<'clipboard' | 'room'>('clipboard');
+  const showOn = (t: 'clipboard' | 'room') =>
+    mobileTab === t ? 'flex' : 'hidden md:flex';
+
   return (
     <main
       className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
     >
-      <section className="flex flex-col gap-[18px]">
+      <MobileTabs
+        tabs={[
+          { key: 'clipboard', label: 'Clipboard' },
+          { key: 'room', label: 'Devices & rooms' },
+        ]}
+        active={mobileTab}
+        onChange={(k) => setMobileTab(k as 'clipboard' | 'room')}
+        className="md:col-span-2"
+      />
+
+      <section className={`${showOn('clipboard')} flex-col gap-[18px]`}>
         <div
           className="rounded-card p-3 text-sm"
           style={{
@@ -244,14 +269,14 @@ function LoggedInHome() {
         <ImageDrop onImage={sendImage} onFile={sendFile} />
       </section>
 
-      <aside className="flex flex-col gap-[18px] md:row-span-2 md:col-start-2 md:row-start-1">
+      <aside className={`${showOn('room')} flex-col gap-[18px] md:row-span-2 md:col-start-2 md:row-start-1`}>
         <NewRoomCard />
         <JoinRoomCard />
         <MyRoomsPanel />
         <DevicesPanel />
       </aside>
 
-      <section className="flex flex-col gap-[18px] md:col-start-1 md:row-start-2">
+      <section className={`${showOn('clipboard')} flex-col gap-[18px] md:col-start-1 md:row-start-2`}>
         {clips.length > 0 && (
           <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-tertiary)' }}>
             <span>{clips.length} clip{clips.length === 1 ? '' : 's'}</span>

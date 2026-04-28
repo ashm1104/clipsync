@@ -31,7 +31,7 @@ export default function AmberBanner({ expiresAtMs }: Props) {
         >
           Sign in free
         </button>{' '}
-        for unlimited time, history across devices, and no countdown — or{' '}
+        for unlimited time and history across devices — or{' '}
         <button
           type="button"
           onClick={() => openUpgrade('default')}

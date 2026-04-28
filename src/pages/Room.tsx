@@ -10,6 +10,7 @@ import HistoryStrip from '../components/room/HistoryStrip';
 import AmberBanner from '../components/room/AmberBanner';
 import ExpiredRoomCard from '../components/room/ExpiredRoomCard';
 import PasswordGate from '../components/room/PasswordGate';
+import MobileTabs from '../components/layout/MobileTabs';
 import { useRoom } from '../hooks/useRoom';
 import { useAnonAuth } from '../hooks/useAnonAuth';
 import { useAppStore } from '../stores/appStore';
@@ -31,6 +32,7 @@ export default function Room() {
   const { room, clips: allClips, loading, notFound, sendText, sendImage, sendFile } = useRoom(slug);
   const myUserId = useAppStore((s) => s.userId);
   const isAnon = useAppStore((s) => s.isAnonymous);
+  const [mobileTab, setMobileTab] = useState<'clipboard' | 'room'>('clipboard');
   const unlockKey = room && myUserId ? `clipsync.unlock.${room.id}.${myUserId}` : null;
   const [unlocked, setUnlocked] = useState<boolean>(() =>
     unlockKey ? sessionStorage.getItem(unlockKey) === '1' : false
@@ -118,7 +120,16 @@ export default function Room() {
       <main
         className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
       >
-        <section className="flex flex-col gap-[18px]">
+        <MobileTabs
+          tabs={[{ key: 'clipboard', label: 'Clipboard' }, { key: 'room', label: 'Room' }]}
+          active={mobileTab}
+          onChange={(k) => setMobileTab(k as 'clipboard' | 'room')}
+          className="md:col-span-2"
+        />
+
+        <section
+          className={`${mobileTab === 'clipboard' ? 'flex' : 'hidden md:flex'} flex-col gap-[18px]`}
+        >
           <div className="flex items-center gap-2 text-sm text-text-secondary">
             <span className={isRoomExpired ? 'sync-dot-expired' : 'sync-dot-live'} />
             <span>{isRoomExpired ? 'Expired · room' : 'Live · room'}</span>
@@ -142,7 +153,9 @@ export default function Room() {
           />
         </section>
 
-        <aside className="flex flex-col gap-[18px]">
+        <aside
+          className={`${mobileTab === 'room' ? 'flex' : 'hidden md:flex'} flex-col gap-[18px]`}
+        >
           <RoomCard
             slug={room ? (room.custom_slug ?? room.slug) : null}
             roomId={room?.id}
