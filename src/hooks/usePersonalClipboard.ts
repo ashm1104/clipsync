@@ -20,7 +20,7 @@ export function usePersonalClipboard() {
     }
     let cancelled = false;
 
-    (async () => {
+    const refetch = async () => {
       const { data } = await supabase
         .from('personal_clips')
         .select('*')
@@ -28,7 +28,10 @@ export function usePersonalClipboard() {
         .order('created_at', { ascending: false })
         .limit(50);
       if (!cancelled) setClips((data ?? []) as Clip[]);
-    })();
+    };
+
+    refetch();
+    window.addEventListener('clipsync.personal.refresh', refetch);
 
     const channel = supabase
       .channel(`personal-feed:${userId}`)
@@ -63,6 +66,7 @@ export function usePersonalClipboard() {
 
     return () => {
       cancelled = true;
+      window.removeEventListener('clipsync.personal.refresh', refetch);
       supabase.removeChannel(channel);
     };
   }, [userId, isAnonymous]);

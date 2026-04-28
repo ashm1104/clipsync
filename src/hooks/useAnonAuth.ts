@@ -46,6 +46,9 @@ export function useAnonAuth() {
             title: 'Your clipboard is safe',
             body: count > 0 ? `${count} items saved to your account.` : 'Signed in.',
           });
+          // Personal Sync may have already fetched its empty list before
+          // the migration inserted rows — tell it to refresh.
+          window.dispatchEvent(new CustomEvent('clipsync.personal.refresh'));
         } catch {
           pushToast({
             kind: 'error',
