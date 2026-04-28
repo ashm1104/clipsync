@@ -120,6 +120,31 @@ function AnonHome() {
       </section>
 
       <aside className={`${showOn('room')} flex-col gap-[18px]`}>
+        <form
+          onSubmit={handleJoin}
+          className="rounded-card bg-bg-card p-4"
+          style={{ border: '0.5px solid var(--border-default)' }}
+        >
+          <div className="text-xs uppercase tracking-wider text-text-tertiary">Join a room</div>
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value.replace(/[^a-z0-9-]/gi, ''))}
+              placeholder="code or custom"
+              maxLength={50}
+              className="min-w-0 flex-1 rounded-btn bg-bg-surface px-2 py-1.5 font-mono text-sm outline-none placeholder:text-text-tertiary"
+              style={{ border: '0.5px solid var(--border-subtle)', letterSpacing: '0.05em', color: 'var(--text-primary)' }}
+            />
+            <button
+              type="submit"
+              disabled={joinCode.trim().length < 3}
+              className="shrink-0 rounded-btn px-3 py-1.5 text-sm transition-colors disabled:opacity-40"
+              style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+            >
+              Join
+            </button>
+          </div>
+        </form>
         {!isRoomExpired && room && (
           <>
             <RoomCard
@@ -161,31 +186,6 @@ function AnonHome() {
             </button>
           </div>
         )}
-        <form
-          onSubmit={handleJoin}
-          className="rounded-card bg-bg-card p-4"
-          style={{ border: '0.5px solid var(--border-default)' }}
-        >
-          <div className="text-xs uppercase tracking-wider text-text-tertiary">Join a room</div>
-          <div className="mt-2 flex items-center gap-2">
-            <input
-              value={joinCode}
-              onChange={(e) => setJoinCode(e.target.value.replace(/[^a-z0-9-]/gi, ''))}
-              placeholder="code or custom"
-              maxLength={50}
-              className="min-w-0 flex-1 rounded-btn bg-bg-surface px-2 py-1.5 font-mono text-sm outline-none placeholder:text-text-tertiary"
-              style={{ border: '0.5px solid var(--border-subtle)', letterSpacing: '0.05em', color: 'var(--text-primary)' }}
-            />
-            <button
-              type="submit"
-              disabled={joinCode.trim().length < 3}
-              className="shrink-0 rounded-btn px-3 py-1.5 text-sm transition-colors disabled:opacity-40"
-              style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)' }}
-            >
-              Join
-            </button>
-          </div>
-        </form>
       </aside>
     </main>
   );
