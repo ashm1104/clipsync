@@ -17,7 +17,7 @@ type Props = {
   source?: 'clips' | 'personal_clips';
   // When set, clips with created_at older than this ms-since-epoch cutoff
   // render in a ghost-blurred state with an Upgrade chip. Used for the
-  // 30-day-history Pro gate on free Personal Sync.
+  // 7-day-history Pro gate on free Personal Sync.
   blurOlderThan?: number | null;
 };
 
@@ -88,7 +88,7 @@ function ClipRow({
               border: '0.5px solid var(--amber-border, #FAC775)',
             }}
           >
-            30-day history on Pro · Upgrade →
+            7-day history on Pro · Upgrade →
           </span>
         </button>
       )}

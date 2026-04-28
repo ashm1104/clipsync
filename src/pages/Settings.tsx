@@ -373,7 +373,7 @@ function BillingTab({ plan, onUpgrade }: { plan: 'free' | 'pro'; onUpgrade: () =
       {plan === 'free' && (
         <p className="mt-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
           Pro unlocks 7-day rooms, password protection, custom slugs, unlimited devices, file uploads
-          and 30-day history.
+          and 7-day history.
         </p>
       )}
     </div>

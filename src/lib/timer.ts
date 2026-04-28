@@ -1,14 +1,15 @@
 // TESTING MODE — shortened to 10 min total so amber/red states are visible.
 // Amber at ≤5m, red at ≤2m, expired at 0.
-// RELEASE VALUES (restore before Phase 6): TTL = 4h, amber ≤60m, red ≤15m.
+// RELEASE VALUES: TTL = 1h, amber ≤30m, red ≤10m. (Was 4h in original
+// spec; tightened to 1h so the 'send and forget' pitch lands cleanly.)
 const TESTING = true;
 
 export const ANONYMOUS_TTL_MS = TESTING
   ? 10 * 60 * 1000 // 10 minutes
-  : 4 * 60 * 60 * 1000; // 4 hours — spec Section 9
+  : 60 * 60 * 1000; // 1 hour
 
-const AMBER_THRESHOLD_MS = TESTING ? 5 * 60 * 1000 : 60 * 60 * 1000;
-const RED_THRESHOLD_MS = TESTING ? 2 * 60 * 1000 : 15 * 60 * 1000;
+const AMBER_THRESHOLD_MS = TESTING ? 5 * 60 * 1000 : 30 * 60 * 1000;
+const RED_THRESHOLD_MS = TESTING ? 2 * 60 * 1000 : 10 * 60 * 1000;
 
 export type TimerState = 'green' | 'amber' | 'red' | 'expired';
 

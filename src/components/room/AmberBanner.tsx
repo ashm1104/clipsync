@@ -31,7 +31,7 @@ export default function AmberBanner({ expiresAtMs }: Props) {
         >
           Sign in free
         </button>{' '}
-        for unlimited time and history across devices — or{' '}
+        to skip room codes — paste on any signed-in device, get it on the others. Or{' '}
         <button
           type="button"
           onClick={() => openUpgrade('default')}

@@ -120,6 +120,47 @@ function AnonHome() {
       </section>
 
       <aside className={`${showOn('room')} flex-col gap-[18px]`}>
+        {!isRoomExpired && room && (
+          <>
+            <RoomCard
+              slug={room.slug}
+              roomId={room.id}
+              ownerId={room.owner_id}
+              onDeleted={() => {
+                clearCurrentRoomSlug();
+                window.location.reload();
+              }}
+            />
+            <TimerCard expiresAtMs={expiresAtMs} />
+            <HistoryStrip
+              expiresAtMs={expiresAtMs}
+              roomSlugs={[room?.slug, room?.custom_slug]}
+            />
+          </>
+        )}
+        {!isRoomExpired && !room && (
+          <div
+            className="rounded-card p-5 text-center"
+            style={{
+              background: 'var(--green-light, #EAF3DE)',
+              border: '0.5px solid #3B6D11',
+              color: 'var(--text-primary)',
+            }}
+          >
+            <p className="text-sm font-medium">Your room appears here</p>
+            <p className="mt-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
+              Paste anything on the Clipboard tab — we'll spin up a room with a code and QR you can share.
+            </p>
+            <button
+              type="button"
+              onClick={() => setMobileTab('clipboard')}
+              className="mt-3 rounded-btn px-3 py-1.5 text-xs font-medium text-white transition-colors md:hidden"
+              style={{ background: '#3B6D11' }}
+            >
+              Go to Clipboard →
+            </button>
+          </div>
+        )}
         <form
           onSubmit={handleJoin}
           className="rounded-card bg-bg-card p-4"
@@ -145,47 +186,6 @@ function AnonHome() {
             </button>
           </div>
         </form>
-        {!isRoomExpired && room && (
-          <>
-            <RoomCard
-              slug={room.slug}
-              roomId={room.id}
-              ownerId={room.owner_id}
-              onDeleted={() => {
-                clearCurrentRoomSlug();
-                window.location.reload();
-              }}
-            />
-            <TimerCard expiresAtMs={expiresAtMs} />
-            <HistoryStrip
-              expiresAtMs={expiresAtMs}
-              roomSlugs={[room?.slug, room?.custom_slug]}
-            />
-          </>
-        )}
-        {!isRoomExpired && !room && (
-          <div
-            className="rounded-card p-4 text-center text-sm"
-            style={{
-              background: 'var(--bg-surface)',
-              border: '0.5px dashed var(--border-default)',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <p>No room yet.</p>
-            <p className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-              Paste anything on the Clipboard tab and your room code, QR and timer will appear here.
-            </p>
-            <button
-              type="button"
-              onClick={() => setMobileTab('clipboard')}
-              className="mt-3 rounded-btn px-3 py-1.5 text-xs transition-colors md:hidden"
-              style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)' }}
-            >
-              Go to Clipboard →
-            </button>
-          </div>
-        )}
       </aside>
     </main>
   );

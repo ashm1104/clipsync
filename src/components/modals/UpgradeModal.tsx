@@ -26,8 +26,8 @@ const REASON_COPY: Record<UpgradeReason, { title: string; body: string }> = {
     body: 'Upgrade to keep rooms alive for a week at a time.',
   },
   history_30d: {
-    title: '30-day history on Pro',
-    body: 'Upgrade to keep every clip searchable for a month.',
+    title: '7-day history on Pro',
+    body: "Free keeps clips for 24 hours. Pro keeps every clip available for the week.",
   },
   third_device: {
     title: 'Pro syncs unlimited devices',
@@ -51,7 +51,7 @@ const PRO_BULLETS = [
   'Up to 50 MB images',
   'Unlimited images per room',
   'Unlimited devices',
-  '30-day history',
+  '7-day history',
   '1h / 24h / 7-day rooms',
   'Password-protected rooms',
   'Custom room codes',
