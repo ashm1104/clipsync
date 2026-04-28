@@ -145,12 +145,12 @@ function AnonHome() {
             </button>
           </div>
         </form>
-        {!isRoomExpired && (
+        {!isRoomExpired && room && (
           <>
             <RoomCard
-              slug={room?.slug ?? null}
-              roomId={room?.id}
-              ownerId={room?.owner_id}
+              slug={room.slug}
+              roomId={room.id}
+              ownerId={room.owner_id}
               onDeleted={() => {
                 clearCurrentRoomSlug();
                 window.location.reload();
@@ -162,6 +162,29 @@ function AnonHome() {
               roomSlugs={[room?.slug, room?.custom_slug]}
             />
           </>
+        )}
+        {!isRoomExpired && !room && (
+          <div
+            className="rounded-card p-4 text-center text-sm"
+            style={{
+              background: 'var(--bg-surface)',
+              border: '0.5px dashed var(--border-default)',
+              color: 'var(--text-secondary)',
+            }}
+          >
+            <p>No room yet.</p>
+            <p className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+              Paste anything on the Clipboard tab and your room code, QR and timer will appear here.
+            </p>
+            <button
+              type="button"
+              onClick={() => setMobileTab('clipboard')}
+              className="mt-3 rounded-btn px-3 py-1.5 text-xs transition-colors md:hidden"
+              style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+            >
+              Go to Clipboard →
+            </button>
+          </div>
         )}
       </aside>
     </main>
