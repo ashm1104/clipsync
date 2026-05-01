@@ -2,12 +2,85 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#3B6D11" />
+
+    <title>Clipta — the clipboard your devices were always missing</title>
+    <meta
+      name="description"
+      content="Cross-device clipboard sync. Paste anything on one device, get it on the others. No install, no app — just open the URL and paste."
+    />
+    <meta
+      name="keywords"
+      content="clipboard sync, clipboard across devices, online clipboard, share clipboard, paste across devices, clipboard manager, cross-device clipboard"
+    />
+    <meta name="author" content="Clipta" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Clipta — cross-device clipboard, no install" />
+    <meta
+      property="og:description"
+      content="Paste anything on one device, get it on the others. Just open the URL and paste."
+    />
+    <meta property="og:image" content="https://clipta.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://clipta.app" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Clipta" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Clipta — cross-device clipboard, no install" />
+    <meta
+      name="twitter:description"
+      content="Paste anything on one device, get it on the others."
+    />
+    <meta name="twitter:image" content="https://clipta.app/og-image.png" />
+
+    <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>clipsync</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://clipta.app" />
+
+    <!-- Structured data: WebApplication schema for Google rich results -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Clipta",
+        "description": "Cross-device clipboard sync. Paste anything on one device, get it on the others.",
+        "url": "https://clipta.app",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Any",
+        "offers": [
+          {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "name": "Free"
+          },
+          {
+            "@type": "Offer",
+            "price": "5",
+            "priceCurrency": "USD",
+            "name": "Pro Monthly"
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      Clipta needs JavaScript to sync your clipboard. Please enable JavaScript or use a modern
+      browser.
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

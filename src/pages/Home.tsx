@@ -10,6 +10,7 @@ import HistoryStrip from '../components/room/HistoryStrip';
 import MyRoomsPanel from '../components/room/MyRoomsPanel';
 import DevicesPanel from '../components/room/DevicesPanel';
 import MobileTabs from '../components/layout/MobileTabs';
+import Footer from '../components/layout/Footer';
 import { useDeviceRegistration } from '../hooks/useDeviceRegistration';
 import { supabase } from '../lib/supabase';
 import AmberBanner from '../components/room/AmberBanner';
@@ -21,7 +22,7 @@ import { useAnonAuth } from '../hooks/useAnonAuth';
 import { useRoomTimer } from '../hooks/useTimer';
 import { useAppStore } from '../stores/appStore';
 
-const AMBER_NUDGE_PREFIX = 'clipsync.amberNudge:';
+const AMBER_NUDGE_PREFIX = 'clipta.amberNudge:';
 
 function useNowTicker(intervalMs = 5000) {
   const [, setN] = useState(0);
@@ -346,9 +347,12 @@ export default function Home() {
   const userId = useAppStore((s) => s.userId);
 
   return (
-    <div className="min-h-full">
+    <div className="flex min-h-full flex-col">
       <Navbar />
-      {isAnon || !userId ? <AnonHome /> : <LoggedInHome />}
+      <div className="flex-1">
+        {isAnon || !userId ? <AnonHome /> : <LoggedInHome />}
+      </div>
+      <Footer />
     </div>
   );
 }

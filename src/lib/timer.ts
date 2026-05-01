@@ -2,7 +2,7 @@
 // Amber at ≤5m, red at ≤2m, expired at 0.
 // RELEASE VALUES: TTL = 1h, amber ≤30m, red ≤10m. (Was 4h in original
 // spec; tightened to 1h so the 'send and forget' pitch lands cleanly.)
-const TESTING = true;
+const TESTING = false;
 
 export const ANONYMOUS_TTL_MS = TESTING
   ? 10 * 60 * 1000 // 10 minutes

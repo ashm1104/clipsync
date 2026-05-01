@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
 import { supabase } from '../lib/supabase';
 import { useAppStore } from '../stores/appStore';
 import { useAnonAuth } from '../hooks/useAnonAuth';
@@ -87,10 +88,10 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-full">
+    <div className="flex min-h-full flex-col">
       <Navbar />
       <main
-        className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[200px_1fr] md:px-[22px] md:py-[20px]"
+        className="mx-auto grid w-full max-w-[960px] flex-1 grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[200px_1fr] md:px-[22px] md:py-[20px]"
       >
         <aside>
           <nav className="-mx-1 flex gap-1 overflow-x-auto px-1 md:flex-col md:overflow-visible">
@@ -140,6 +141,7 @@ export default function Settings() {
           )}
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

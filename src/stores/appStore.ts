@@ -39,6 +39,10 @@ type AppState = {
   openCreateRoom: () => void;
   closeCreateRoom: () => void;
 
+  feedbackModalOpen: boolean;
+  openFeedback: () => void;
+  closeFeedback: () => void;
+
   toasts: Toast[];
   pushToast: (t: Omit<Toast, 'id'>) => string;
   dismissToast: (id: string) => void;
@@ -64,6 +68,10 @@ export const useAppStore = create<AppState>((set) => ({
   createRoomModalOpen: false,
   openCreateRoom: () => set({ createRoomModalOpen: true }),
   closeCreateRoom: () => set({ createRoomModalOpen: false }),
+
+  feedbackModalOpen: false,
+  openFeedback: () => set({ feedbackModalOpen: true }),
+  closeFeedback: () => set({ feedbackModalOpen: false }),
 
   toasts: [],
   pushToast: (t) => {

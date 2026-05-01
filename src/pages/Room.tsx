@@ -11,6 +11,7 @@ import AmberBanner from '../components/room/AmberBanner';
 import ExpiredRoomCard from '../components/room/ExpiredRoomCard';
 import PasswordGate from '../components/room/PasswordGate';
 import MobileTabs from '../components/layout/MobileTabs';
+import Footer from '../components/layout/Footer';
 import { useRoom } from '../hooks/useRoom';
 import { useAnonAuth } from '../hooks/useAnonAuth';
 import { useAppStore } from '../stores/appStore';
@@ -33,7 +34,7 @@ export default function Room() {
   const myUserId = useAppStore((s) => s.userId);
   const isAnon = useAppStore((s) => s.isAnonymous);
   const [mobileTab, setMobileTab] = useState<'clipboard' | 'room'>('clipboard');
-  const unlockKey = room && myUserId ? `clipsync.unlock.${room.id}.${myUserId}` : null;
+  const unlockKey = room && myUserId ? `clipta.unlock.${room.id}.${myUserId}` : null;
   const [unlocked, setUnlocked] = useState<boolean>(() =>
     unlockKey ? sessionStorage.getItem(unlockKey) === '1' : false
   );
@@ -115,10 +116,10 @@ export default function Room() {
   }
 
   return (
-    <div className="min-h-full">
+    <div className="flex min-h-full flex-col">
       <Navbar />
       <main
-        className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
+        className="mx-auto grid w-full max-w-[960px] flex-1 grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
       >
         <MobileTabs
           tabs={[{ key: 'clipboard', label: 'Clipboard' }, { key: 'room', label: 'Room' }]}
@@ -169,6 +170,7 @@ export default function Room() {
           />
         </aside>
       </main>
+      <Footer />
     </div>
   );
 }

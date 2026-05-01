@@ -48,7 +48,7 @@ export function useAnonAuth() {
           });
           // Personal Sync may have already fetched its empty list before
           // the migration inserted rows — tell it to refresh.
-          window.dispatchEvent(new CustomEvent('clipsync.personal.refresh'));
+          window.dispatchEvent(new CustomEvent('clipta.personal.refresh'));
         } catch {
           pushToast({
             kind: 'error',

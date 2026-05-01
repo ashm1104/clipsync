@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /r/
+Disallow: /settings
+
+Sitemap: https://clipta.app/sitemap.xml
