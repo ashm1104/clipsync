@@ -45,7 +45,7 @@ export function Privacy() {
   return (
     <Page
       title="Privacy Policy"
-      intro="What Clipta collects, why, and how long we keep it."
+      intro="What Pastio collects, why, and how long we keep it."
     >
       <section className="text-sm" style={{ color: 'var(--text-secondary)' }}>
         <h2 className="mb-2 text-base font-medium" style={{ color: 'var(--text-primary)' }}>
@@ -86,7 +86,7 @@ export function Privacy() {
           Third parties
         </h2>
         <p>
-          Clipta uses Supabase (database, auth, storage), Vercel (hosting), and Plausible Analytics
+          Pastio uses Supabase (database, auth, storage), Vercel (hosting), and Plausible Analytics
           (privacy-friendly analytics). Paid plans go through Dodo Payments. We don't sell or
           share your data with anyone else.
         </p>
@@ -101,13 +101,13 @@ export function Privacy() {
 
 export function Terms() {
   return (
-    <Page title="Terms of Service" intro="By using Clipta, you agree to these terms.">
+    <Page title="Terms of Service" intro="By using Pastio, you agree to these terms.">
       <section className="text-sm" style={{ color: 'var(--text-secondary)' }}>
         <h2 className="mb-2 text-base font-medium" style={{ color: 'var(--text-primary)' }}>
           Acceptable use
         </h2>
         <p>
-          Don't use Clipta for content that's illegal, hateful, infringes copyright, or harms
+          Don't use Pastio for content that's illegal, hateful, infringes copyright, or harms
           others. We may remove content and terminate accounts that break this rule.
         </p>
       </section>
@@ -116,9 +116,9 @@ export function Terms() {
           As-is service
         </h2>
         <p>
-          Clipta is provided as-is, without warranty. We do our best to keep the service running
+          Pastio is provided as-is, without warranty. We do our best to keep the service running
           and your data intact, but we can't guarantee zero downtime or zero data loss. Don't use
-          Clipta as the sole storage for anything irreplaceable.
+          Pastio as the sole storage for anything irreplaceable.
         </p>
       </section>
       <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
@@ -142,7 +142,7 @@ export function Refunds() {
             Outside 14 days, your subscription stays active until the end of the term.
           </li>
           <li>
-            <strong>Service issues</strong>: if Clipta has a sustained outage that affected your
+            <strong>Service issues</strong>: if Pastio has a sustained outage that affected your
             use, contact us via the feedback form and we'll review case-by-case.
           </li>
         </ul>

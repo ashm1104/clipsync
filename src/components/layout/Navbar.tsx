@@ -27,7 +27,7 @@ export default function Navbar() {
     // Clear per-room password unlocks so a new visitor must re-enter.
     for (let i = sessionStorage.length - 1; i >= 0; i--) {
       const k = sessionStorage.key(i);
-      if (k && k.startsWith('clipta.unlock.')) sessionStorage.removeItem(k);
+      if (k && k.startsWith('pastio.unlock.')) sessionStorage.removeItem(k);
     }
     await supabase.auth.signOut();
     pushToast({ kind: 'info', title: 'Signed out' });
@@ -49,7 +49,7 @@ export default function Navbar() {
             className="font-mono text-base font-medium"
             style={{ color: 'var(--text-primary)', letterSpacing: '0.05em' }}
           >
-            clipta
+            pastio
           </span>
         </Link>
         <nav className="flex items-center gap-2">

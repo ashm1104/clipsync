@@ -15,7 +15,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: { componentStack?: string | null }): void {
     // eslint-disable-next-line no-console
-    console.error('Clipta error boundary:', error, info.componentStack);
+    console.error('Pastio error boundary:', error, info.componentStack);
   }
 
   reset = () => {
@@ -39,7 +39,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             Something broke
           </p>
           <h1 className="mt-2 text-lg" style={{ color: 'var(--text-primary)' }}>
-            Clipta hit an unexpected error
+            Pastio hit an unexpected error
           </h1>
           <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
             We couldn't render the screen. Reloading usually fixes it.

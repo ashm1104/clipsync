@@ -1,8 +1,8 @@
 import type { ClipType } from './contentDetector';
 import { ANONYMOUS_TTL_MS } from './timer';
 
-const KEY = 'clipta.anon.clips';
-const ROOM_KEY = 'clipta.anon.currentRoom';
+const KEY = 'pastio.anon.clips';
+const ROOM_KEY = 'pastio.anon.currentRoom';
 
 export type LocalClip = {
   id: string;
@@ -36,7 +36,7 @@ export function getLocalClips(): LocalClip[] {
   if (fresh.length !== all.length) {
     write(fresh);
     // Fire in a microtask so consumers reading during render don't loop.
-    queueMicrotask(() => window.dispatchEvent(new CustomEvent('clipta.local.change')));
+    queueMicrotask(() => window.dispatchEvent(new CustomEvent('pastio.local.change')));
   }
   return fresh;
 }
@@ -46,7 +46,7 @@ export function addLocalClip(clip: LocalClip) {
   if (all.some((c) => c.id === clip.id)) return;
   all.unshift(clip);
   write(all);
-  window.dispatchEvent(new CustomEvent('clipta.local.change'));
+  window.dispatchEvent(new CustomEvent('pastio.local.change'));
 }
 
 export function removeLocalClip(id: string) {
@@ -54,12 +54,12 @@ export function removeLocalClip(id: string) {
   const next = all.filter((c) => c.id !== id);
   if (next.length === all.length) return;
   write(next);
-  window.dispatchEvent(new CustomEvent('clipta.local.change'));
+  window.dispatchEvent(new CustomEvent('pastio.local.change'));
 }
 
 export function clearLocalClips() {
   localStorage.removeItem(KEY);
-  window.dispatchEvent(new CustomEvent('clipta.local.change'));
+  window.dispatchEvent(new CustomEvent('pastio.local.change'));
 }
 
 export function getCurrentRoomSlug(): string | null {

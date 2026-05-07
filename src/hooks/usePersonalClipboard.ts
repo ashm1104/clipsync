@@ -31,7 +31,7 @@ export function usePersonalClipboard() {
     };
 
     refetch();
-    window.addEventListener('clipta.personal.refresh', refetch);
+    window.addEventListener('pastio.personal.refresh', refetch);
 
     const channel = supabase
       .channel(`personal-feed:${userId}`)
@@ -66,7 +66,7 @@ export function usePersonalClipboard() {
 
     return () => {
       cancelled = true;
-      window.removeEventListener('clipta.personal.refresh', refetch);
+      window.removeEventListener('pastio.personal.refresh', refetch);
       supabase.removeChannel(channel);
     };
   }, [userId, isAnonymous]);

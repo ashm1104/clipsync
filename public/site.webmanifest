@@ -1,6 +1,6 @@
 {
-  "name": "Clipta",
-  "short_name": "Clipta",
+  "name": "Pastio",
+  "short_name": "Pastio",
   "description": "Cross-device clipboard sync. Paste anything on one device, get it on the others.",
   "start_url": "/",
   "scope": "/",

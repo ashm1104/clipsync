@@ -34,7 +34,7 @@ export default function Room() {
   const myUserId = useAppStore((s) => s.userId);
   const isAnon = useAppStore((s) => s.isAnonymous);
   const [mobileTab, setMobileTab] = useState<'clipboard' | 'room'>('clipboard');
-  const unlockKey = room && myUserId ? `clipta.unlock.${room.id}.${myUserId}` : null;
+  const unlockKey = room && myUserId ? `pastio.unlock.${room.id}.${myUserId}` : null;
   const [unlocked, setUnlocked] = useState<boolean>(() =>
     unlockKey ? sessionStorage.getItem(unlockKey) === '1' : false
   );

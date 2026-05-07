@@ -1,12 +1,12 @@
-# Clipta
+# Pastio
 
-> Clipta is a real-time cross-device clipboard. Paste anything — text, code, URLs, images, files — on one device and it appears instantly on any other device with the same room code, or automatically across all your signed-in devices via Personal Sync. No app to install.
+> Pastio is a real-time cross-device clipboard. Paste anything — text, code, URLs, images, files — on one device and it appears instantly on any other device with the same room code, or automatically across all your signed-in devices via Personal Sync. No app to install.
 
-Clipta is built for the moment between devices: the URL on your phone you want to open on your laptop, the screenshot you took that needs to go into a doc, the SSH key snippet you need to send a teammate. The product is intentionally ephemeral — anonymous rooms expire in one hour, free signed-in clip history is 24 hours, Pro is 7 days.
+Pastio is built for the moment between devices: the URL on your phone you want to open on your laptop, the screenshot you took that needs to go into a doc, the SSH key snippet you need to send a teammate. The product is intentionally ephemeral — anonymous rooms expire in one hour, free signed-in clip history is 24 hours, Pro is 7 days.
 
 ## How it works
 
-- **Anonymous (no sign-in):** Open clipta.app, paste anything. We auto-create a 6-character room code. Open the same URL on another device, enter the code (or scan the QR), and the clipboard syncs in real time. The room expires in one hour.
+- **Anonymous (no sign-in):** Open pastio.app, paste anything. We auto-create a 6-character room code. Open the same URL on another device, enter the code (or scan the QR), and the clipboard syncs in real time. The room expires in one hour.
 - **Personal Sync (signed in):** Sign in with Google or magic link. Now your clipboard follows you across all signed-in devices automatically — no codes needed. Free plan keeps 24 hours of history; Pro keeps 7 days.
 - **Rooms (signed in):** Create longer-lived rooms (1h or 24h on Free, up to 7 days on Pro) with optional custom slugs and password protection.
 
@@ -17,10 +17,10 @@ Clipta is built for the moment between devices: the URL on your phone you want t
 
 ## Key pages
 
-- [Homepage](https://clipta.app): the app itself — paste here to start.
-- [Privacy policy](https://clipta.app/privacy): what data Clipta collects and how it's handled.
-- [Terms of service](https://clipta.app/terms): use terms.
-- [Refund policy](https://clipta.app/refunds): refund window and process for paid plans.
+- [Homepage](https://pastio.app): the app itself — paste here to start.
+- [Privacy policy](https://pastio.app/privacy): what data Pastio collects and how it's handled.
+- [Terms of service](https://pastio.app/terms): use terms.
+- [Refund policy](https://pastio.app/refunds): refund window and process for paid plans.
 
 ## Optional
 

@@ -1,14 +1,14 @@
-# Clipta
+# Pastio
 
 > The clipboard your devices were always missing.
 
 Cross-device clipboard sync. Paste anything — text, code, URLs, images, files — on one device and it shows up on the others. No app to install, just open the URL and paste.
 
-🌐 **[clipta.app](https://clipta.app)**
+🌐 **[pastio.app](https://pastio.app)**
 
 ## What it does
 
-**Anonymous mode** — Open Clipta, paste anything, get a 6-character room code or QR. Open the same URL on your other device, enter the code, and the clipboard syncs in real time. The room expires in one hour. Zero sign-up.
+**Anonymous mode** — Open Pastio, paste anything, get a 6-character room code or QR. Open the same URL on your other device, enter the code, and the clipboard syncs in real time. The room expires in one hour. Zero sign-up.
 
 **Personal Sync (signed in)** — Sign in with Google or magic link. Now your clipboard follows you across all signed-in devices automatically. No codes. Free plan keeps 24 hours of history; Pro keeps 7 days and unlocks unlimited devices, password rooms, file uploads, and longer-lived rooms.
 

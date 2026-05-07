@@ -22,7 +22,7 @@ import { useAnonAuth } from '../hooks/useAnonAuth';
 import { useRoomTimer } from '../hooks/useTimer';
 import { useAppStore } from '../stores/appStore';
 
-const AMBER_NUDGE_PREFIX = 'clipta.amberNudge:';
+const AMBER_NUDGE_PREFIX = 'pastio.amberNudge:';
 
 function useNowTicker(intervalMs = 5000) {
   const [, setN] = useState(0);

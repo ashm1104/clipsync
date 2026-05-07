@@ -12,7 +12,7 @@ export default function Footer() {
       <div className="mx-auto flex max-w-[960px] flex-col items-start gap-3 px-4 py-6 text-xs sm:flex-row sm:items-center sm:justify-between md:px-[22px]">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1" style={{ color: 'var(--text-tertiary)' }}>
           <span className="font-mono" style={{ letterSpacing: '0.05em' }}>
-            clipta
+            pastio
           </span>
           <span>© {new Date().getFullYear()}</span>
           <span>·</span>

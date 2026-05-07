@@ -3,4 +3,4 @@ Allow: /
 Disallow: /r/
 Disallow: /settings
 
-Sitemap: https://clipta.app/sitemap.xml
+Sitemap: https://pastio.app/sitemap.xml

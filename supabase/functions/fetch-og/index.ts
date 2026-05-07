@@ -41,7 +41,7 @@ Deno.serve(async (req: Request) => {
       signal: controller.signal,
       headers: {
         'User-Agent':
-          'Mozilla/5.0 (compatible; CliptaBot/1.0; +https://clipta.app)',
+          'Mozilla/5.0 (compatible; PastioBot/1.0; +https://pastio.app)',
         Accept: 'text/html,application/xhtml+xml',
       },
       redirect: 'follow',
