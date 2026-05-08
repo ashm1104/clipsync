@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { Events, trackEvent } from '../lib/analytics';
 
 export type ToastKind = 'success' | 'info' | 'warning' | 'error';
 export type Plan = 'free' | 'pro';
@@ -61,8 +62,10 @@ export const useAppStore = create<AppState>((set) => ({
 
   upgradeModalOpen: false,
   upgradeReason: 'default',
-  openUpgrade: (reason = 'default') =>
-    set({ upgradeModalOpen: true, upgradeReason: reason }),
+  openUpgrade: (reason = 'default') => {
+    if (reason !== 'default') trackEvent(Events.proGateHit, { reason });
+    set({ upgradeModalOpen: true, upgradeReason: reason });
+  },
   closeUpgrade: () => set({ upgradeModalOpen: false }),
 
   createRoomModalOpen: false,

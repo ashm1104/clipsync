@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppStore, type UpgradeReason } from '../../stores/appStore';
 import { supabase } from '../../lib/supabase';
+import { Events, trackEvent } from '../../lib/analytics';
 
 type Interval = 'monthly' | 'yearly';
 
@@ -73,6 +74,10 @@ export default function UpgradeModal() {
   const [interval, setInterval] = useState<Interval>('monthly');
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    if (open) trackEvent(Events.upgradeModalOpened, { reason });
+  }, [open, reason]);
+
   if (!open) return null;
   const copy = REASON_COPY[reason];
   const price = PRICING[interval];
@@ -83,6 +88,7 @@ export default function UpgradeModal() {
       openSignIn();
       return;
     }
+    trackEvent(Events.upgradeClicked, { interval, reason });
     setBusy(true);
     // Stripe wiring arrives when the create-checkout Edge Function is
     // deployed. For now surface a clear toast so the button is honest.

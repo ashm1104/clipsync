@@ -4,6 +4,7 @@ import { useAppStore } from '../stores/appStore';
 import { detectType, detectLanguage } from '../lib/contentDetector';
 import { uploadImageToRoom, uploadFileToRoom } from '../lib/storage';
 import { fetchOg } from '../lib/og';
+import { Events, trackEvent } from '../lib/analytics';
 import type { Clip } from './useRoom';
 
 // Personal Sync: signed-in users send directly to personal_clips.
@@ -94,6 +95,7 @@ export function usePersonalClipboard() {
         size_bytes: new Blob([content]).size,
       });
       if (error) throw error;
+      trackEvent(Events.clipSent, { mode: 'personal', type });
     },
     []
   );
@@ -111,6 +113,7 @@ export function usePersonalClipboard() {
         size_bytes: size,
       });
       if (error) throw error;
+      trackEvent(Events.clipSent, { mode: 'personal', type: 'image' });
     },
     []
   );
@@ -128,6 +131,7 @@ export function usePersonalClipboard() {
         size_bytes: size,
       });
       if (error) throw error;
+      trackEvent(Events.clipSent, { mode: 'personal', type: 'file' });
     },
     []
   );

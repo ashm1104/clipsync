@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAppStore } from '../../stores/appStore';
+import { Events, trackEvent } from '../../lib/analytics';
 
 type Stage = 'choose' | 'magic_sent' | 'error';
 
@@ -11,6 +12,10 @@ export default function SignInModal() {
   const [stage, setStage] = useState<Stage>('choose');
   const [busy, setBusy] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (open) trackEvent(Events.signinModalOpened);
+  }, [open]);
 
   if (!open) return null;
 

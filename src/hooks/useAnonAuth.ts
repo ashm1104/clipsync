@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { ensureAnonSession, migrateLocalToAccount } from '../lib/auth';
 import { useAppStore } from '../stores/appStore';
+import { Events, trackEvent } from '../lib/analytics';
 
 // `is_anonymous` is on the JWT app_metadata when a user signed in via
 // signInAnonymously. The supabase-js types don't surface it yet.
@@ -49,6 +50,7 @@ export function useAnonAuth() {
           // Personal Sync may have already fetched its empty list before
           // the migration inserted rows — tell it to refresh.
           window.dispatchEvent(new CustomEvent('pastio.personal.refresh'));
+          trackEvent(Events.signinCompleted, { migrated: count });
         } catch {
           pushToast({
             kind: 'error',

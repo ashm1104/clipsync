@@ -6,6 +6,7 @@ import { setCurrentRoomSlug, addLocalClip } from '../lib/localStorage';
 import { useAppStore } from '../stores/appStore';
 import { uploadImageToRoom, uploadFileToRoom } from '../lib/storage';
 import { fetchOg } from '../lib/og';
+import { Events, trackEvent } from '../lib/analytics';
 
 export type Clip = {
   id: string;
@@ -121,6 +122,7 @@ export function useRoom(initialSlug?: string) {
     if (error) throw error;
     setRoom(data as Room);
     setCurrentRoomSlug(slug);
+    trackEvent(Events.roomCreated, { kind: 'anon_auto' });
     return data as Room;
   }, [room]);
 
@@ -155,6 +157,7 @@ export function useRoom(initialSlug?: string) {
         .select()
         .single();
       if (error) throw error;
+      trackEvent(Events.clipSent, { mode: 'room', type });
       if (data) {
         addLocalClip({
           id: data.id,
@@ -206,6 +209,7 @@ export function useRoom(initialSlug?: string) {
         .select()
         .single();
       if (error) throw error;
+      trackEvent(Events.clipSent, { mode: 'room', type: 'image' });
       if (data) {
         addLocalClip({
           id: data.id,
@@ -243,6 +247,7 @@ export function useRoom(initialSlug?: string) {
         .select()
         .single();
       if (error) throw error;
+      trackEvent(Events.clipSent, { mode: 'room', type: 'file' });
       if (data) {
         addLocalClip({
           id: data.id,

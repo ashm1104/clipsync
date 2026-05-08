@@ -22,7 +22,7 @@
       property="og:description"
       content="Paste anything on one device, get it on the others. Just open the URL and paste."
     />
-    <meta property="og:image" content="https://pastio.app/og-image.png" />
+    <meta property="og:image" content="https://pastio.app/api/og" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:url" content="https://pastio.app" />
@@ -36,7 +36,7 @@
       name="twitter:description"
       content="Paste anything on one device, get it on the others."
     />
-    <meta name="twitter:image" content="https://pastio.app/og-image.png" />
+    <meta name="twitter:image" content="https://pastio.app/api/og" />
 
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -47,6 +47,17 @@
 
     <!-- Canonical -->
     <link rel="canonical" href="https://pastio.app" />
+
+    <!-- Plausible analytics — privacy-friendly, no cookies. Activate the
+         pastio.app site at plausible.io for events to start recording. -->
+    <script defer data-domain="pastio.app" src="https://plausible.io/js/script.js"></script>
+    <script>
+      window.plausible =
+        window.plausible ||
+        function () {
+          (window.plausible.q = window.plausible.q || []).push(arguments);
+        };
+    </script>
 
     <!-- Structured data: WebApplication schema for Google rich results -->
     <script type="application/ld+json">

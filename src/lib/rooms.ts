@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { createUniqueSlug } from './slug';
+import { Events, trackEvent } from './analytics';
 
 export type RoomExpiry = '1h' | '24h' | '7d';
 
@@ -50,5 +51,11 @@ export async function createRoom(opts: CreateRoomOptions) {
     .select()
     .single();
   if (error) throw error;
+  trackEvent(Events.roomCreated, {
+    kind: 'modal',
+    expiry: opts.expiry,
+    has_password: !!password_hash,
+    has_custom_slug: !!custom_slug,
+  });
   return data;
 }
