@@ -48,15 +48,16 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://pastio.app" />
 
-    <!-- Plausible analytics — privacy-friendly, no cookies. Activate the
-         pastio.app site at plausible.io for events to start recording. -->
-    <script defer data-domain="pastio.app" src="https://plausible.io/js/script.js"></script>
+    <!-- Plausible analytics — privacy-friendly, no cookies. -->
+    <script async src="https://plausible.io/js/pa-vpaAzJLeDOqumNtLeM23i.js"></script>
     <script>
       window.plausible =
         window.plausible ||
         function () {
-          (window.plausible.q = window.plausible.q || []).push(arguments);
+          (plausible.q = plausible.q || []).push(arguments);
         };
+      plausible.init = plausible.init || function (i) { plausible.o = i || {}; };
+      plausible.init();
     </script>
 
     <!-- Structured data: WebApplication schema for Google rich results -->
