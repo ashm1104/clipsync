@@ -71,10 +71,10 @@ export default function SignInModal() {
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>
-              Save your clipboard forever
+              Sync your clipboard
             </h2>
             <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
-              Free. No credit card. Sync across all your devices.
+              Free. No credit card. No room codes — your clips follow you across devices.
             </p>
           </div>
           <button
@@ -181,7 +181,15 @@ export default function SignInModal() {
         )}
 
         <p className="mt-5 text-xs text-text-tertiary">
-          By continuing you agree to terms that don't exist yet because this is Phase 3.
+          By continuing you agree to our{' '}
+          <a href="/terms" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-text-secondary">
+            Terms
+          </a>{' '}
+          and{' '}
+          <a href="/privacy" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-text-secondary">
+            Privacy Policy
+          </a>
+          .
         </p>
       </div>
     </div>
