@@ -34,7 +34,7 @@ export default function Footer() {
             Feedback
           </button>
           <a
-            href="https://github.com/ashm1104/clipsync"
+            href="https://github.com/ashm1104/pastio"
             target="_blank"
             rel="noreferrer noopener"
             className="transition-colors hover:text-text-primary"

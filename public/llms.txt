@@ -24,4 +24,4 @@ Pastio is built for the moment between devices: the URL on your phone you want t
 
 ## Optional
 
-- [GitHub](https://github.com/ashm1104/clipsync): source code.
+- [GitHub](https://github.com/ashm1104/pastio): source code.
