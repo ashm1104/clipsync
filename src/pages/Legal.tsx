@@ -1,14 +1,12 @@
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 
-// Pastio is operated as a sole-proprietor product by Aayush Sagar
-// from Jharkhand, India. Contact: support@pastio.app.
-//
-// Drafted for an indie SaaS in 2026 — clear, defensible, no boilerplate
-// cruft. Not a substitute for a lawyer's review before scaling
-// commercially, but more than sufficient for launch.
+// Operator identity is intentionally not surfaced on the public legal
+// pages. Brand "Pastio" + contact email + jurisdiction is sufficient
+// disclosure under DPDP Act / GDPR / consumer law. Real operator
+// identity is on file with payment provider, registrar, and bank for
+// any legitimate legal process.
 
-const OPERATOR = 'Aayush Sagar';
 const CONTACT = 'support@pastio.app';
 const JURISDICTION = 'Jharkhand, India';
 const EFFECTIVE = 'April 26, 2026';
@@ -82,7 +80,7 @@ export function Privacy() {
   return (
     <Page
       title="Privacy Policy"
-      intro={`What Pastio collects, why, and how long we keep it. Operated by ${OPERATOR}, ${JURISDICTION}.`}
+      intro={`What Pastio collects, why, and how long we keep it. Operated from ${JURISDICTION}.`}
     >
       <Section title="Plain-English summary">
         <P>
@@ -93,10 +91,11 @@ export function Privacy() {
         </P>
       </Section>
 
-      <Section title="Who runs Pastio">
+      <Section title="Who this applies to">
         <P>
-          Pastio is operated as a sole-proprietor product by {OPERATOR}, based in {JURISDICTION}.
-          For privacy questions or data requests, contact <strong>{CONTACT}</strong>.
+          This policy applies to anyone using Pastio at <strong>pastio.app</strong>. Pastio
+          is operated from {JURISDICTION}. For privacy questions or data requests, email{' '}
+          <strong>{CONTACT}</strong>.
         </P>
       </Section>
 
@@ -178,6 +177,17 @@ export function Privacy() {
         <P>We don't sell, rent, or trade your data with anyone outside this list.</P>
       </Section>
 
+      <Section title="Cross-border data transfers">
+        <P>
+          Pastio's primary database is hosted in Singapore (Supabase ap-southeast-1).
+          Vercel's edge runtime serves requests from the region nearest to you. By using
+          Pastio from outside India, you consent to your data being processed in India,
+          Singapore, and the United States (Vercel/Plausible). We rely on standard
+          contractual clauses and the providers' own GDPR / DPDP-aligned terms for
+          international transfers.
+        </P>
+      </Section>
+
       <Section title="Your rights">
         <P>
           Under India's Digital Personal Data Protection Act, 2023 (DPDP Act) and equivalent
@@ -194,6 +204,15 @@ export function Privacy() {
         <P>
           To exercise any of these, email <strong>{CONTACT}</strong>. We respond within
           30 days.
+        </P>
+      </Section>
+
+      <Section title="Marketing and automated decisions">
+        <P>
+          Pastio doesn't send marketing emails. The only emails you'll receive from us are
+          transactional (sign-in magic links, billing receipts via Dodo, replies to your
+          support requests). We don't run automated decision-making or profiling that has
+          legal effect on you.
         </P>
       </Section>
 
@@ -244,7 +263,7 @@ export function Terms() {
   return (
     <Page
       title="Terms of Service"
-      intro={`The agreement between you and ${OPERATOR}, who operates Pastio.`}
+      intro="The agreement between you and Pastio."
     >
       <Section title="What Pastio is">
         <P>
@@ -257,9 +276,8 @@ export function Terms() {
 
       <Section title="Who runs it">
         <P>
-          Pastio is operated by {OPERATOR} as an individual based in {JURISDICTION}.
-          By using Pastio, you agree to these Terms. If you don't agree, please don't use
-          Pastio.
+          Pastio is operated from {JURISDICTION}. By using Pastio, you agree to these Terms.
+          If you don't agree, please don't use Pastio.
         </P>
       </Section>
 
@@ -339,7 +357,7 @@ export function Terms() {
       <Section title="Pastio's intellectual property">
         <P>
           The Pastio brand, logo, code (where not separately open-sourced), and design are
-          owned by {OPERATOR}. Don't clone the brand or imply affiliation. The product source
+          owned by Pastio. Don't clone the brand or imply affiliation. The product source
           code may be open-sourced separately under terms in the repository.
         </P>
       </Section>
@@ -354,17 +372,21 @@ export function Terms() {
 
       <Section title="Disclaimers and liability">
         <P>
-          To the fullest extent permitted by law, Pastio and {OPERATOR} disclaim all warranties,
-          express or implied, including merchantability and fitness for a particular purpose.
+          To the fullest extent permitted by law, Pastio disclaims all warranties, express
+          or implied, including merchantability and fitness for a particular purpose.
           Pastio's total liability for any claim arising out of or related to these Terms or
           your use of the service is limited to the amount you've paid Pastio in the 12 months
           before the claim, or ₹1,000 INR if you haven't paid anything.
+        </P>
+        <P>
+          Nothing in these Terms limits liability that cannot be excluded under applicable
+          consumer-protection law.
         </P>
       </Section>
 
       <Section title="Indemnification">
         <P>
-          If a third party brings a claim against {OPERATOR} because of how you used Pastio
+          If a third party brings a claim against Pastio because of how you used the service
           (especially around content you posted), you agree to defend and hold us harmless,
           unless the claim arises from our own gross negligence.
         </P>
@@ -379,6 +401,30 @@ export function Terms() {
             unused portion of a Pro subscription if termination wasn't due to your violation.
           </li>
         </UL>
+      </Section>
+
+      <Section title="Force majeure">
+        <P>
+          Pastio isn't liable for delays or failures caused by events beyond our reasonable
+          control, including infrastructure-provider outages, internet failures, government
+          action, natural disasters, or acts of war.
+        </P>
+      </Section>
+
+      <Section title="Notices">
+        <P>
+          Legal notices to Pastio must be sent to <strong>{CONTACT}</strong> with "Legal
+          Notice" in the subject. We send notices to you at the email you signed in with,
+          or in-product if you haven't signed in.
+        </P>
+      </Section>
+
+      <Section title="Severability and entire agreement">
+        <P>
+          If any part of these Terms is found unenforceable, the rest stays in effect. These
+          Terms (together with the Privacy Policy and Refund Policy) are the entire agreement
+          between you and Pastio about the service, and replace any earlier statements.
+        </P>
       </Section>
 
       <Section title="Governing law and disputes">
