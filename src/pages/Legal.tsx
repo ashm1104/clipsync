@@ -263,7 +263,7 @@ export function Terms() {
   return (
     <Page
       title="Terms of Service"
-      intro="The agreement between you and Pastio."
+      intro="The agreement between you and Pastio. By using Pastio, you agree to these Terms. If you don't agree, please don't use Pastio."
     >
       <Section title="What Pastio is">
         <P>
@@ -271,13 +271,6 @@ export function Terms() {
           You can use it anonymously (room-based sharing) or signed in (Personal Sync across
           your devices). A free tier is available; a paid Pro tier unlocks longer retention,
           more devices, and additional features.
-        </P>
-      </Section>
-
-      <Section title="Who runs it">
-        <P>
-          Pastio is operated from {JURISDICTION}. By using Pastio, you agree to these Terms.
-          If you don't agree, please don't use Pastio.
         </P>
       </Section>
 
