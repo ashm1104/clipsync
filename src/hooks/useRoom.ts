@@ -127,12 +127,19 @@ export function useRoom(initialSlug?: string) {
   }, [room]);
 
   const sendText = useCallback(
-    async (rawText: string, hasHtml: boolean, htmlContent?: string) => {
+    async (
+      rawText: string,
+      hasHtml: boolean,
+      htmlContent?: string,
+      override?: { type: 'text' | 'code' | 'url' | 'rich_text'; language: string | null } | null
+    ) => {
       const text = rawText.trim();
       if (!text) return;
       const r = await ensureRoom();
-      const type = detectType(text, hasHtml);
-      const language = type === 'code' ? detectLanguage(text) : null;
+      const type = override?.type ?? detectType(text, hasHtml);
+      const language =
+        override?.language ??
+        (type === 'code' ? detectLanguage(text) : null);
       const content = type === 'rich_text' && htmlContent ? htmlContent : text;
 
       let og: { title: string | null; description: string | null; image: string | null } | null = null;

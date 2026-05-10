@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useLocalClips } from '../../hooks/useLocalClips';
 import { useRoomTimer } from '../../hooks/useTimer';
 import { supabase } from '../../lib/supabase';
-import { removeLocalClip } from '../../lib/localStorage';
+import { removeLocalClip, type LocalClip } from '../../lib/localStorage';
 import { useAppStore } from '../../stores/appStore';
+import HistoryPreviewModal from './HistoryPreviewModal';
 
 const TYPE_LABEL: Record<string, string> = {
   text: 'text',
@@ -51,6 +53,7 @@ export default function HistoryStrip({ expiresAtMs, roomSlugs }: Props) {
     : [];
   const { state, label } = useRoomTimer(expiresAtMs);
   const pushToast = useAppStore((s) => s.pushToast);
+  const [preview, setPreview] = useState<LocalClip | null>(null);
 
   const handleDelete = async (id: string) => {
     removeLocalClip(id);
@@ -115,7 +118,7 @@ export default function HistoryStrip({ expiresAtMs, roomSlugs }: Props) {
       ) : (
         <ul className="flex flex-col gap-2">
           {clips.slice(0, 8).map((c) => {
-            const preview =
+            const previewText =
               c.type === 'image'
                 ? '[image]'
                 : c.type === 'rich_text'
@@ -123,16 +126,23 @@ export default function HistoryStrip({ expiresAtMs, roomSlugs }: Props) {
                 : c.content.slice(0, 48);
             return (
               <li key={c.id} className="group flex items-center gap-2 text-xs">
-                <Swatch type={c.type} />
-                <span
-                  className="shrink-0 rounded-pill px-1.5 py-0.5 text-[10px] uppercase"
-                  style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
+                <button
+                  type="button"
+                  onClick={() => setPreview(c)}
+                  className="flex min-w-0 flex-1 items-center gap-2 rounded-btn px-1 py-0.5 text-left transition-colors hover:bg-bg-surface"
+                  title="Click to preview"
                 >
-                  {TYPE_LABEL[c.type] ?? c.type}
-                </span>
-                <span className="min-w-0 flex-1 truncate" style={{ color: 'var(--text-secondary)' }}>
-                  {preview}
-                </span>
+                  <Swatch type={c.type} />
+                  <span
+                    className="shrink-0 rounded-pill px-1.5 py-0.5 text-[10px] uppercase"
+                    style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
+                  >
+                    {TYPE_LABEL[c.type] ?? c.type}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate" style={{ color: 'var(--text-secondary)' }}>
+                    {previewText}
+                  </span>
+                </button>
                 <button
                   type="button"
                   onClick={() => handleDelete(c.id)}
@@ -152,6 +162,7 @@ export default function HistoryStrip({ expiresAtMs, roomSlugs }: Props) {
           })}
         </ul>
       )}
+      <HistoryPreviewModal clip={preview} onClose={() => setPreview(null)} />
     </div>
   );
 }
