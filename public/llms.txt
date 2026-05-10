@@ -22,6 +22,3 @@ Pastio is built for the moment between devices: the URL on your phone you want t
 - [Terms of service](https://pastio.app/terms): use terms.
 - [Refund policy](https://pastio.app/refunds): refund window and process for paid plans.
 
-## Optional
-
-- [GitHub](https://github.com/ashm1104/pastio): source code.

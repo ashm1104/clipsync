@@ -33,14 +33,6 @@ export default function Footer() {
           >
             Feedback
           </button>
-          <a
-            href="https://github.com/ashm1104/pastio"
-            target="_blank"
-            rel="noreferrer noopener"
-            className="transition-colors hover:text-text-primary"
-          >
-            GitHub
-          </a>
         </div>
         <div className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
           Built for the moment between phone and laptop.
