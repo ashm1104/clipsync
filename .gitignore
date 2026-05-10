@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Internal product/state docs — never commit
+PASTIO_STATUS.md
