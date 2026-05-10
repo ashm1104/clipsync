@@ -92,6 +92,10 @@ export function detectLanguage(code: string): string {
     /\bNone\b|\bTrue\b|\bFalse\b/,
     /:\s*$/m, // line ending with colon (block opener)
     /\b__\w+__\b/, // dunder
+    /\b(sorted|len|map|filter|zip|enumerate|dict|list|set|tuple|str|int|float|bool)\s*\(/, // common builtins
+    /\bfor\s+\w+(\s*,\s*\w+)*\s+in\s+/, // for-in (with optional tuple unpacking) — comprehensions, loops
+    /\bif\s+__name__\s*==\s*['"]__main__['"]/,
+    /\.(append|extend|pop|keys|values|items|get|update)\s*\(/, // common method calls
   ]);
 
   const ts = score([
@@ -183,7 +187,12 @@ export function detectLanguage(code: string): string {
   ];
 
   candidates.sort((a, b) => b[1] - a[1]);
+  // Strong winner: 2+ signals.
   if (candidates[0][1] >= 2) return candidates[0][0];
+  // Clear winner with one signal — pick it as long as no other language
+  // matched anything. Prevents 'plaintext' output when there's a unique
+  // language tell (e.g. a lone `lambda` for Python).
+  if (candidates[0][1] >= 1 && candidates[0][1] > candidates[1][1]) return candidates[0][0];
 
   // Fallback to original prefix-based guess.
   if (/^(def |class |import |from )/.test(code)) return 'python';

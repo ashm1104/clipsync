@@ -154,6 +154,12 @@ export default function PasteArea({ onSend, onImagePaste, live }: Props) {
               ? ` · ${effective.language}`
               : ''}
           </span>
+          {effective.type === 'code' &&
+            (!effective.language || effective.language === 'plaintext') && (
+              <span style={{ color: 'var(--amber-text, #633806)' }}>
+                language unsure — pick one for syntax highlighting
+              </span>
+            )}
           <button
             type="button"
             onClick={() => setShowPicker((s) => !s)}
