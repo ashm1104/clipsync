@@ -88,6 +88,20 @@
     </script>
   </head>
   <body>
+    <!--
+      Static SEO content for crawlers that don't run JavaScript (Bing,
+      older Googlebot fallback). Visually hidden but in the DOM and HTML
+      byte stream. Lives outside #root so React never replaces it.
+    -->
+    <h1 style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">
+      Pastio — cross-device clipboard sync
+    </h1>
+    <p style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">
+      Pastio is a real-time cross-device clipboard. Paste anything — text, code, URLs, images, files —
+      on one device and it appears instantly on your other devices. Anonymous rooms expire in one hour;
+      sign in for personal sync across all your devices with no codes.
+    </p>
+
     <div id="root"></div>
     <noscript>
       Pastio needs JavaScript to sync your clipboard. Please enable JavaScript or use a modern
