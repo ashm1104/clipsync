@@ -38,11 +38,12 @@
     />
     <meta name="twitter:image" content="https://pastio.app/api/og" />
 
-    <!-- Favicons -->
+    <!-- Favicons. SVG for modern browsers, dynamic 512px PNG via the
+         /api/icon edge function for Apple touch + crawlers that don't
+         read SVG. -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/api/icon" />
+    <link rel="apple-touch-icon" href="/api/icon" />
     <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Canonical -->
@@ -58,6 +59,18 @@
         };
       plausible.init = plausible.init || function (i) { plausible.o = i || {}; };
       plausible.init();
+    </script>
+
+    <!-- Organization schema — declares the canonical logo so Google
+         can render it next to pastio.app in search results. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Pastio",
+        "url": "https://pastio.app",
+        "logo": "https://pastio.app/api/icon"
+      }
     </script>
 
     <!-- Structured data: WebApplication schema for Google rich results -->
