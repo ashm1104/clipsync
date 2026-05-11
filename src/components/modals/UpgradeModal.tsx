@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAppStore, type UpgradeReason } from '../../stores/appStore';
 import { supabase } from '../../lib/supabase';
 import { Events, trackEvent } from '../../lib/analytics';
+import { detectPricingTier, getPricing, formatYearlyAsMonthly } from '../../lib/geo';
 
 type Interval = 'monthly' | 'yearly';
 
@@ -59,11 +60,6 @@ const PRO_BULLETS = [
   'File uploads (PDF, ZIP, …)',
 ];
 
-const PRICING = {
-  monthly: { label: '$5', sub: 'per month' },
-  yearly: { label: '$48', sub: 'per year — 2 months free' },
-};
-
 export default function UpgradeModal() {
   const open = useAppStore((s) => s.upgradeModalOpen);
   const close = useAppStore((s) => s.closeUpgrade);
@@ -73,6 +69,9 @@ export default function UpgradeModal() {
   const pushToast = useAppStore((s) => s.pushToast);
   const [interval, setInterval] = useState<Interval>('monthly');
   const [busy, setBusy] = useState(false);
+  const tier = useMemo(() => detectPricingTier(), []);
+  const tierConfig = useMemo(() => getPricing(tier), [tier]);
+  const yearlyMonthlyEquivalent = useMemo(() => formatYearlyAsMonthly(tier), [tier]);
 
   useEffect(() => {
     if (open) trackEvent(Events.upgradeModalOpened, { reason });
@@ -80,7 +79,14 @@ export default function UpgradeModal() {
 
   if (!open) return null;
   const copy = REASON_COPY[reason];
-  const price = PRICING[interval];
+  const priceEntry = interval === 'monthly' ? tierConfig.monthly : tierConfig.yearly;
+  const price = {
+    label: priceEntry.label,
+    sub:
+      interval === 'monthly'
+        ? 'per month'
+        : `per year — ${yearlyMonthlyEquivalent} effective`,
+  };
 
   const startCheckout = async () => {
     if (!userId) {
@@ -88,13 +94,18 @@ export default function UpgradeModal() {
       openSignIn();
       return;
     }
-    trackEvent(Events.upgradeClicked, { interval, reason });
+    trackEvent(Events.upgradeClicked, { interval, reason, tier });
     setBusy(true);
-    // Stripe wiring arrives when the create-checkout Edge Function is
-    // deployed. For now surface a clear toast so the button is honest.
+    // Dodo wiring lands next. Until then surface a clear toast so the
+    // button is honest about state.
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { interval, userId },
+        body: {
+          interval,
+          tier,
+          productId: priceEntry.dodoProductId,
+          userId,
+        },
       });
       if (error || !data?.url) throw error ?? new Error('No checkout URL');
       window.location.href = data.url;
@@ -102,7 +113,7 @@ export default function UpgradeModal() {
       pushToast({
         kind: 'info',
         title: 'Checkout coming soon',
-        body: 'Stripe wiring lands next — plan changes are preview-only for now.',
+        body: 'Payment wiring lands next — plan changes are preview-only for now.',
       });
       setBusy(false);
     }
@@ -154,7 +165,9 @@ export default function UpgradeModal() {
                 border: interval === i ? '0.5px solid var(--border-default)' : '0.5px solid transparent',
               }}
             >
-              {i === 'monthly' ? 'Monthly' : 'Yearly · save 20%'}
+              {i === 'monthly'
+                ? 'Monthly'
+                : `Yearly · save ${tierConfig.yearlyDiscountPct}%`}
             </button>
           ))}
         </div>

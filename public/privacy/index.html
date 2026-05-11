@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#3B6D11" />
+  <title>Privacy Policy — Pastio</title>
+  <meta name="description" content="Pastio's privacy policy — what we collect, why, retention periods, and your rights under the DPDP Act, GDPR, and CCPA." />
+  <link rel="canonical" href="https://pastio.app/privacy" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/api/icon" />
+  <link rel="apple-touch-icon" href="/api/icon" />
+  <style>
+    :root {
+      --bg-page: #f0ede8;
+      --bg-card: #ffffff;
+      --bg-surface: #f5f4f0;
+      --text-primary: #1a1a18;
+      --text-secondary: #5a5754;
+      --text-tertiary: #9a9690;
+      --border-subtle: rgba(0,0,0,0.07);
+      --border-default: rgba(0,0,0,0.13);
+      --green-primary: #3B6D11;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    header.nav {
+      border-bottom: 0.5px solid var(--border-subtle);
+      background: var(--bg-page);
+    }
+    header.nav .inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    @media (min-width: 768px) {
+      header.nav .inner { padding: 12px 22px; }
+    }
+    .brand {
+      font-family: 'DM Mono', ui-monospace, monospace;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 16px;
+    }
+    main.page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 16px 64px;
+    }
+    @media (min-width: 768px) {
+      main.page { padding: 48px 22px 80px; }
+    }
+    h1 { font-size: 24px; font-weight: 500; margin: 0 0 8px; color: var(--text-primary); }
+    .intro { font-size: 14px; color: var(--text-secondary); margin: 0; }
+    .operator {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: var(--bg-surface);
+      border: 0.5px solid var(--border-subtle);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+    .effective { margin-top: 4px; font-size: 12px; color: var(--text-tertiary); }
+    section { display: flex; flex-direction: column; gap: 8px; margin-top: 24px; }
+    h2 { font-size: 16px; font-weight: 500; margin: 0; color: var(--text-primary); }
+    p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+    ul { font-size: 14px; color: var(--text-secondary); padding-left: 20px; margin: 0; }
+    ul li { margin-bottom: 6px; }
+    strong { color: var(--text-secondary); }
+    a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+    a:hover { color: var(--text-primary); }
+    footer.site {
+      border-top: 0.5px solid var(--border-subtle);
+      margin-top: 48px;
+    }
+    footer.site .inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    @media (min-width: 768px) {
+      footer.site .inner { padding: 24px 22px; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="inner">
+      <a href="/" class="brand">pastio</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <h1>Privacy Policy</h1>
+    <p class="intro">What Pastio collects, why, and how long we keep it.</p>
+    <p class="operator">Pastio is operated from Jharkhand, India. Contact: <a href="mailto:support@pastio.app">support@pastio.app</a>.</p>
+    <p class="effective">Effective: April 26, 2026</p>
+
+    <section>
+      <h2>Plain-English summary</h2>
+      <p>Pastio is a clipboard sync utility. Anything you paste through Pastio is stored temporarily so we can deliver it to your other devices, then deleted automatically. We don't sell your data, run ad-tech, or share content with third parties beyond the infrastructure providers we strictly need to operate. Pastio is the Data Fiduciary under India's Digital Personal Data Protection Act, 2023 (DPDP Act).</p>
+    </section>
+
+    <section>
+      <h2>What we collect</h2>
+      <ul>
+        <li><strong>Clip content</strong> — the text, code, URLs, images, or files you paste through Pastio. Stored in our database (text/code/URL/metadata) or object storage (images/files).</li>
+        <li><strong>Account data</strong> — your email address (only if you sign in via Google or magic link) and an optional display name.</li>
+        <li><strong>Device data</strong> — an opaque session identifier from your auth token, a generic device label like "Chrome on macOS" derived from your User-Agent, and a last-seen timestamp. Used to power the device-slot feature.</li>
+        <li><strong>Usage analytics</strong> — anonymous, aggregate event data via Plausible Analytics. No cookies, no cross-site tracking, no fingerprinting. Counts pageviews, event names, country, and referrer source. Never includes clip content, user IDs, or email addresses.</li>
+        <li><strong>Feedback</strong> — if you submit feedback via the in-product form, we store the message text plus your email if you provided one.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>How long we keep it</h2>
+      <ul>
+        <li>Anonymous rooms and their clips: deleted 1 hour after creation.</li>
+        <li>Free Personal Sync clips: deleted 24 hours after creation.</li>
+        <li>Pro Personal Sync clips: deleted 7 days after creation.</li>
+        <li>Image and file uploads: deleted on the same schedule as the clip that referenced them.</li>
+        <li>Account record (email, profile, devices): kept until you delete your account. Email <strong>support@pastio.app</strong> to request deletion.</li>
+        <li>Analytics events (Plausible): aggregated, no personal identifier retained.</li>
+        <li>Feedback submissions: kept for 12 months, then permanently deleted.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Third-party processors</h2>
+      <p>To run Pastio, your data passes through these providers:</p>
+      <ul>
+        <li><strong>Supabase</strong> — database, authentication, file storage, real-time sync. Hosts the substance of your clips. Located in their Singapore region.</li>
+        <li><strong>Vercel</strong> — web hosting and edge functions. Sees request metadata (IP, User-Agent) but not clip content beyond what's in HTTP requests.</li>
+        <li><strong>Plausible Analytics</strong> — aggregate, cookieless analytics.</li>
+        <li><strong>Dodo Payments</strong> — handles Pro subscription billing as Merchant of Record. Sees customer billing info you enter (name, email, payment method, country). Pastio receives a customer ID and subscription status; we never see your payment-method details.</li>
+        <li><strong>Google / email magic-link providers</strong> — only if you choose those sign-in methods.</li>
+      </ul>
+      <p>We don't sell, rent, or trade your data with anyone outside this list.</p>
+    </section>
+
+    <section>
+      <h2>Cross-border data transfers</h2>
+      <p>Pastio's primary database is hosted in Singapore (Supabase ap-southeast-1). Vercel's edge runtime serves requests from the region nearest to you. By using Pastio from outside India, you consent to your data being processed in India, Singapore, and the United States (Vercel/Plausible). We rely on standard contractual clauses and the providers' own GDPR / DPDP-aligned terms for international transfers.</p>
+    </section>
+
+    <section>
+      <h2>Your rights</h2>
+      <p>Under India's Digital Personal Data Protection Act, 2023 (DPDP Act) and equivalent regimes (GDPR for EU residents, CCPA for California), you have the right to:</p>
+      <ul>
+        <li>Access the personal data we hold about you</li>
+        <li>Correct inaccurate data</li>
+        <li>Delete your data and account</li>
+        <li>Export your data in a portable format</li>
+        <li>Withdraw consent for processing at any time</li>
+        <li>Lodge a complaint with the Data Protection Board of India or your local DPA</li>
+      </ul>
+      <p>To exercise any of these, email <strong>support@pastio.app</strong>. We respond within 30 days.</p>
+    </section>
+
+    <section>
+      <h2>Marketing and automated decisions</h2>
+      <p>Pastio doesn't send marketing emails. The only emails you'll receive from us are transactional (sign-in magic links, billing receipts via Dodo, replies to your support requests). We don't run automated decision-making or profiling that has legal effect on you.</p>
+    </section>
+
+    <section>
+      <h2>Cookies and local storage</h2>
+      <p>Pastio uses the browser's localStorage and sessionStorage to remember your active session, room state, and UI preferences. We do <strong>not</strong> use third-party tracking cookies, advertising cookies, or social-media pixels. Plausible Analytics is configured cookieless.</p>
+    </section>
+
+    <section>
+      <h2>Children</h2>
+      <p>Pastio is not intended for users under 13. If we learn we've collected data from a child under 13, we delete it. If you're a parent or guardian and believe we have your child's data, contact <strong>support@pastio.app</strong>.</p>
+    </section>
+
+    <section>
+      <h2>Security</h2>
+      <p>We use HTTPS everywhere, RLS-protected database access, and JWT-based session authentication. Password-protected rooms use SHA-256 hashing. We can't fully guarantee security against every possible threat — no service can — but we follow standard practices. If you discover a vulnerability, please email <strong>support@pastio.app</strong> and we'll respond promptly.</p>
+    </section>
+
+    <section>
+      <h2>Changes to this policy</h2>
+      <p>If we materially change this policy, we'll update the effective date at the top and notify signed-in users in-product. Continued use after changes means acceptance.</p>
+    </section>
+
+    <section>
+      <h2>Contact</h2>
+      <p>Questions, requests, complaints: <strong>support@pastio.app</strong>.</p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="inner">
+      <span>pastio · © 2026 ·
+        <a href="/privacy">Privacy</a> ·
+        <a href="/terms">Terms</a> ·
+        <a href="/refunds">Refunds</a>
+      </span>
+    </div>
+  </footer>
+</body>
+</html>

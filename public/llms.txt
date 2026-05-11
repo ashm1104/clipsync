@@ -13,7 +13,7 @@ Pastio is built for the moment between devices: the URL on your phone you want t
 ## Pricing
 
 - **Free:** Anonymous rooms (1h), Personal Sync with 24h history, 2 devices, 3 images per room, 10MB image cap, 1h or 24h rooms.
-- **Pro ($5/mo or $48/yr in supported markets; ₹99/mo or ₹799/yr in India and South Asia):** 7-day history, unlimited devices, password-protected rooms, custom room codes, file uploads (PDF/ZIP/CSV/etc.), 7-day rooms, 50MB file cap.
+- **Pro ($5/mo or $40/yr in supported markets; ₹99/mo or ₹999/yr in India and South Asia):** 7-day history, unlimited devices, password-protected rooms, custom room codes, file uploads (PDF/ZIP/CSV/etc.), 7-day rooms, 50MB file cap.
 
 ## Key pages
 

@@ -48,7 +48,7 @@ Cross-device clipboard sync. Paste anything — text, code, URLs, images, files 
 | Password-protected rooms | — | ✓ |
 | Custom room codes | — | ✓ |
 
-**Pro pricing:** $5/mo · $48/yr (Western markets) · ₹99/mo · ₹799/yr (India + South Asia)
+**Pro pricing:** $5/mo · $40/yr (Western markets) · ₹99/mo · ₹999/yr (India + South Asia)
 
 ## Local development
 

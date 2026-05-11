@@ -1,15 +1,16 @@
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 
-// Operator identity is intentionally not surfaced on the public legal
-// pages. Brand "Pastio" + contact email + jurisdiction is sufficient
-// disclosure under DPDP Act / GDPR / consumer law. Real operator
-// identity is on file with payment provider, registrar, and bank for
-// any legitimate legal process.
+// Operator identity is intentionally not surfaced beyond the brand
+// 'Pastio' on the public legal pages. Brand + contact email + jurisdiction
+// satisfies DPDP Act / GDPR / consumer-law disclosure requirements. Real
+// operator identity is on file with payment provider, registrar and bank
+// for any legitimate legal process.
 
 const CONTACT = 'support@pastio.app';
 const JURISDICTION = 'Jharkhand, India';
 const EFFECTIVE = 'April 26, 2026';
+const OPERATOR_LINE = `Pastio is operated from ${JURISDICTION}. Contact: ${CONTACT}.`;
 
 function Page({
   title,
@@ -29,6 +30,16 @@ function Page({
         </h1>
         <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
           {intro}
+        </p>
+        <p
+          className="mt-2 rounded-btn px-3 py-2 text-xs"
+          style={{
+            background: 'var(--bg-surface)',
+            border: '0.5px solid var(--border-subtle)',
+            color: 'var(--text-secondary)',
+          }}
+        >
+          {OPERATOR_LINE}
         </p>
         <p className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
           Effective: {EFFECTIVE}
@@ -80,22 +91,15 @@ export function Privacy() {
   return (
     <Page
       title="Privacy Policy"
-      intro={`What Pastio collects, why, and how long we keep it. Operated from ${JURISDICTION}.`}
+      intro="What Pastio collects, why, and how long we keep it."
     >
       <Section title="Plain-English summary">
         <P>
           Pastio is a clipboard sync utility. Anything you paste through Pastio is stored
           temporarily so we can deliver it to your other devices, then deleted automatically.
           We don't sell your data, run ad-tech, or share content with third parties beyond
-          the infrastructure providers we strictly need to operate.
-        </P>
-      </Section>
-
-      <Section title="Who this applies to">
-        <P>
-          This policy applies to anyone using Pastio at <strong>pastio.app</strong>. Pastio
-          is operated from {JURISDICTION}. For privacy questions or data requests, email{' '}
-          <strong>{CONTACT}</strong>.
+          the infrastructure providers we strictly need to operate. Pastio is the Data
+          Fiduciary under India's Digital Personal Data Protection Act, 2023 (DPDP Act).
         </P>
       </Section>
 
@@ -143,8 +147,7 @@ export function Privacy() {
           </li>
           <li>Analytics events (Plausible): aggregated, no personal identifier retained.</li>
           <li>
-            Feedback submissions: kept until reviewed, then archived for product-history
-            purposes.
+            Feedback submissions: kept for 12 months, then permanently deleted.
           </li>
         </UL>
       </Section>
@@ -332,7 +335,7 @@ export function Terms() {
           </li>
           <li>Refund terms are described in our <a className="underline underline-offset-2" href="/refunds">Refund Policy</a>.</li>
           <li>
-            We may change Pro pricing for new customers with 14 days' notice. Existing
+            We may change Pro pricing for new customers with 30 days' notice. Existing
             subscribers keep their current price for the term they've already paid.
           </li>
         </UL>
@@ -350,8 +353,8 @@ export function Terms() {
       <Section title="Pastio's intellectual property">
         <P>
           The Pastio brand, logo, code (where not separately open-sourced), and design are
-          owned by Pastio. Don't clone the brand or imply affiliation. The product source
-          code may be open-sourced separately under terms in the repository.
+          the property of Pastio. Don't clone the brand or imply affiliation. The product
+          source code may be open-sourced separately under terms in the repository.
         </P>
       </Section>
 
