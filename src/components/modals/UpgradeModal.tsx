@@ -179,7 +179,7 @@ export default function UpgradeModal() {
           >
             <div className="text-xs uppercase tracking-wider text-text-tertiary">Free</div>
             <div className="mt-1 text-base font-medium" style={{ color: 'var(--text-primary)' }}>
-              $0
+              {tierConfig.symbol}0
             </div>
             <ul className="mt-3 flex flex-col gap-1.5 text-sm" style={{ color: 'var(--text-secondary)' }}>
               {FREE_BULLETS.map((b) => (
