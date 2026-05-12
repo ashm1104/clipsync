@@ -1,4 +1,5 @@
 import type { Clip } from '../../hooks/useRoom';
+import { useAppStore } from '../../stores/appStore';
 
 type Props = { clip: Clip; onDelete?: () => void };
 
@@ -14,9 +15,12 @@ const PILLS: Record<string, { bg: string; color: string; label: string }> = {
 export default function TextClip({ clip, onDelete }: Props) {
   const pill = PILLS[clip.type] ?? PILLS.text;
   const mono = clip.type === 'code';
+  const pushToast = useAppStore((s) => s.pushToast);
 
   const copy = async () => {
-    if (clip.content) await navigator.clipboard.writeText(clip.content);
+    if (!clip.content) return;
+    await navigator.clipboard.writeText(clip.content);
+    pushToast({ kind: 'success', title: 'Copied to clipboard' });
   };
 
   return (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { codeToHtml } from 'shiki';
 import type { Clip } from '../../hooks/useRoom';
+import { useAppStore } from '../../stores/appStore';
 
 export default function CodeClip({ clip, onDelete }: { clip: Clip; onDelete?: () => void }) {
   const [html, setHtml] = useState<string>('');
@@ -24,8 +25,11 @@ export default function CodeClip({ clip, onDelete }: { clip: Clip; onDelete?: ()
     };
   }, [clip.content, lang]);
 
+  const pushToast = useAppStore((s) => s.pushToast);
   const copy = async () => {
-    if (clip.content) await navigator.clipboard.writeText(clip.content);
+    if (!clip.content) return;
+    await navigator.clipboard.writeText(clip.content);
+    pushToast({ kind: 'success', title: 'Copied to clipboard' });
   };
 
   return (

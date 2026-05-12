@@ -104,9 +104,29 @@ export function useRoom(initialSlug?: string) {
       )
       .subscribe();
     channelRef.current = channel;
+
+    // Refetch on tab focus/visibility so a backgrounded tab that missed
+    // realtime events catches up immediately. Supabase realtime can
+    // silently drop after idle periods.
+    const refetchRoomClips = async () => {
+      const { data: rows } = await supabase
+        .from('clips')
+        .select('*')
+        .eq('room_id', room.id)
+        .order('created_at', { ascending: false });
+      if (rows) setClips(rows as Clip[]);
+    };
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') refetchRoomClips();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', refetchRoomClips);
+
     return () => {
       supabase.removeChannel(channel);
       channelRef.current = null;
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', refetchRoomClips);
     };
   }, [room]);
 

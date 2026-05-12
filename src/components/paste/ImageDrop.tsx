@@ -182,6 +182,21 @@ export default function ImageDrop({ onImage, onFile }: Props) {
         <>
           <div className="text-sm">Drop an image or click to browse</div>
           <div className="mt-1 text-xs text-text-tertiary">PNG, JPG, WebP, GIF · up to 10MB</div>
+          {plan !== 'pro' && (
+            <div className="mt-2 text-[11px]" style={{ color: 'var(--amber-text, #633806)' }}>
+              💎 PDFs, ZIPs, CSVs and more files —{' '}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openUpgrade('file_upload');
+                }}
+                className="underline underline-offset-2"
+              >
+                Pro feature
+              </button>
+            </div>
+          )}
         </>
       )}
       {error && <div className="mt-2 text-xs" style={{ color: 'var(--red-text)' }}>{error}</div>}

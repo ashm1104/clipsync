@@ -34,6 +34,15 @@ export function usePersonalClipboard() {
     refetch();
     window.addEventListener('pastio.personal.refresh', refetch);
 
+    // Realtime can drop quietly when a tab has been backgrounded for a
+    // while. Refetch whenever the tab becomes visible again so we never
+    // sit on a stale list.
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') refetch();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', refetch);
+
     const channel = supabase
       .channel(`personal-feed:${userId}`)
       .on(
@@ -68,6 +77,8 @@ export function usePersonalClipboard() {
     return () => {
       cancelled = true;
       window.removeEventListener('pastio.personal.refresh', refetch);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', refetch);
       supabase.removeChannel(channel);
     };
   }, [userId, isAnonymous]);

@@ -117,7 +117,12 @@ function AnonHome() {
             <ImageDrop onImage={sendImage} onFile={sendFile} />
           </>
         )}
-        {!isRoomExpired && <ClipFeed clips={clips} />}
+        {!isRoomExpired && (
+          <ClipFeed
+            clips={clips}
+            emptyLabel="Clips received from others will appear here."
+          />
+        )}
       </section>
 
       <aside className={`${showOn('room')} flex-col gap-[18px]`}>
@@ -158,10 +163,7 @@ function AnonHome() {
               }}
             />
             <TimerCard expiresAtMs={expiresAtMs} />
-            <HistoryStrip
-              expiresAtMs={expiresAtMs}
-              roomSlugs={[room?.slug, room?.custom_slug]}
-            />
+            <HistoryStrip roomSlugs={[room?.slug, room?.custom_slug]} />
           </>
         )}
         {!isRoomExpired && !room && (

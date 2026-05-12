@@ -1,6 +1,7 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import type { Clip } from '../../hooks/useRoom';
+import { useAppStore } from '../../stores/appStore';
 
 export default function RichClip({ clip, onDelete }: { clip: Clip; onDelete?: () => void }) {
   const editor = useEditor({
@@ -9,8 +10,11 @@ export default function RichClip({ clip, onDelete }: { clip: Clip; onDelete?: ()
     editable: false,
   });
 
+  const pushToast = useAppStore((s) => s.pushToast);
   const copy = async () => {
-    if (clip.content) await navigator.clipboard.writeText(clip.content);
+    if (!clip.content) return;
+    await navigator.clipboard.writeText(clip.content);
+    pushToast({ kind: 'success', title: 'Copied HTML to clipboard' });
   };
 
   return (

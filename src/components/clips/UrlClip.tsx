@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Clip } from '../../hooks/useRoom';
+import { useAppStore } from '../../stores/appStore';
 
 function hostname(url: string | null): string {
   if (!url) return '';
@@ -28,10 +29,12 @@ export default function UrlClip({ clip, onDelete }: { clip: Clip; onDelete?: () 
 
   const href = clip.content ?? '#';
 
+  const pushToast = useAppStore((s) => s.pushToast);
   const copyUrl = async () => {
     if (!clip.content) return;
     await navigator.clipboard.writeText(clip.content);
     setCopied(true);
+    pushToast({ kind: 'success', title: 'URL copied to clipboard' });
     setTimeout(() => setCopied(false), 1500);
   };
 

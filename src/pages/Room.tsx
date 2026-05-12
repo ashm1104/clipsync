@@ -164,10 +164,7 @@ export default function Room() {
             onDeleted={() => navigate('/')}
           />
           <TimerCard expiresAtMs={expiresAtMs} />
-          <HistoryStrip
-            expiresAtMs={expiresAtMs}
-            roomSlugs={[room?.slug, room?.custom_slug]}
-          />
+          <HistoryStrip roomSlugs={[room?.slug, room?.custom_slug]} />
         </aside>
       </main>
       <Footer />

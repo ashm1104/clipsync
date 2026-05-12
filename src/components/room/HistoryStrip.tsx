@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useLocalClips } from '../../hooks/useLocalClips';
-import { useRoomTimer } from '../../hooks/useTimer';
 import { supabase } from '../../lib/supabase';
 import { removeLocalClip, type LocalClip } from '../../lib/localStorage';
 import { useAppStore } from '../../stores/appStore';
@@ -16,7 +15,6 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 type Props = {
-  expiresAtMs: number | null;
   // Slugs the current room is reachable by. Local clips are filtered to
   // those whose roomSlug matches one of these — keeps history scoped to
   // the room you're looking at, even if multiple anon rooms exist in the
@@ -43,7 +41,7 @@ function Swatch({ type }: { type: string }) {
   );
 }
 
-export default function HistoryStrip({ expiresAtMs, roomSlugs }: Props) {
+export default function HistoryStrip({ roomSlugs }: Props) {
   const allClips = useLocalClips();
   const validSlugs = (roomSlugs ?? []).filter(Boolean) as string[];
   // No slug yet (e.g. fresh tab before a room is created): show nothing,
@@ -51,7 +49,6 @@ export default function HistoryStrip({ expiresAtMs, roomSlugs }: Props) {
   const clips = validSlugs.length
     ? allClips.filter((c) => validSlugs.includes(c.roomSlug))
     : [];
-  const { state, label } = useRoomTimer(expiresAtMs);
   const pushToast = useAppStore((s) => s.pushToast);
   const [preview, setPreview] = useState<LocalClip | null>(null);
 
@@ -77,15 +74,6 @@ export default function HistoryStrip({ expiresAtMs, roomSlugs }: Props) {
     pushToast({ kind: 'success', title: 'History cleared' });
   };
 
-  const timerColor =
-    state === 'red'
-      ? 'var(--red-text)'
-      : state === 'amber'
-      ? 'var(--amber-text)'
-      : state === 'expired'
-      ? 'var(--text-tertiary)'
-      : 'var(--text-tertiary)';
-
   return (
     <div
       className="rounded-card p-4"
@@ -104,16 +92,11 @@ export default function HistoryStrip({ expiresAtMs, roomSlugs }: Props) {
               Clear
             </button>
           )}
-          {expiresAtMs != null && (
-            <span className="text-xs" style={{ color: timerColor }}>
-              {state === 'expired' ? 'expired' : label}
-            </span>
-          )}
         </div>
       </div>
       {clips.length === 0 ? (
         <div className="text-xs text-text-tertiary">
-          Your clips from this browser will show here.
+          Clips you've sent from this browser will appear here.
         </div>
       ) : (
         <ul className="flex flex-col gap-2">

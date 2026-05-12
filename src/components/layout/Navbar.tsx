@@ -6,8 +6,10 @@ import { getCurrentSessionId } from '../../hooks/useDeviceRegistration';
 
 export default function Navbar() {
   const openSignIn = useAppStore((s) => s.openSignIn);
+  const openUpgrade = useAppStore((s) => s.openUpgrade);
   const isAnon = useAppStore((s) => s.isAnonymous);
   const userId = useAppStore((s) => s.userId);
+  const plan = useAppStore((s) => s.plan);
   const pushToast = useAppStore((s) => s.pushToast);
 
   const handleSignOut = async () => {
@@ -66,6 +68,20 @@ export default function Navbar() {
             </button>
           ) : (
             <>
+              {plan !== 'pro' && (
+                <button
+                  type="button"
+                  onClick={() => openUpgrade('default')}
+                  className="hidden rounded-btn px-3 py-1.5 text-sm font-medium transition-colors sm:inline-flex"
+                  style={{
+                    background: 'var(--amber-light, #FAEEDA)',
+                    color: 'var(--amber-text, #633806)',
+                    border: '0.5px solid var(--amber-border, #FAC775)',
+                  }}
+                >
+                  Upgrade to Pro
+                </button>
+              )}
               <Link
                 to="/settings"
                 className="rounded-btn px-3 py-1.5 text-sm transition-colors"
