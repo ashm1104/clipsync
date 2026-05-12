@@ -12,6 +12,9 @@ import type { Clip } from './useRoom';
 export function usePersonalClipboard() {
   const userId = useAppStore((s) => s.userId);
   const isAnonymous = useAppStore((s) => s.isAnonymous);
+  // Tear-down + re-run after a migration completes, so the initial
+  // empty fetch can't overwrite freshly-migrated rows in a race.
+  const syncRevision = useAppStore((s) => s.syncRevision);
   const [clips, setClips] = useState<Clip[]>([]);
 
   useEffect(() => {
@@ -81,7 +84,7 @@ export function usePersonalClipboard() {
       window.removeEventListener('focus', refetch);
       supabase.removeChannel(channel);
     };
-  }, [userId, isAnonymous]);
+  }, [userId, isAnonymous, syncRevision]);
 
   const sendText = useCallback(
     async (

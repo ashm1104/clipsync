@@ -72,14 +72,17 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => openUpgrade('default')}
-                  className="hidden rounded-btn px-3 py-1.5 text-sm font-medium transition-colors sm:inline-flex"
+                  className="rounded-btn px-2.5 py-1.5 text-sm font-medium transition-colors sm:px-3"
                   style={{
                     background: 'var(--amber-light, #FAEEDA)',
                     color: 'var(--amber-text, #633806)',
                     border: '0.5px solid var(--amber-border, #FAC775)',
                   }}
+                  aria-label="Upgrade to Pro"
+                  title="Upgrade to Pro"
                 >
-                  Upgrade to Pro
+                  <span className="sm:hidden">✨ Pro</span>
+                  <span className="hidden sm:inline">Upgrade to Pro</span>
                 </button>
               )}
               <Link

@@ -44,6 +44,11 @@ type AppState = {
   openFeedback: () => void;
   closeFeedback: () => void;
 
+  // Bumped after the anon→authenticated migration finishes so any
+  // hook that depends on personal_clips can refetch cleanly.
+  syncRevision: number;
+  bumpSyncRevision: () => void;
+
   toasts: Toast[];
   pushToast: (t: Omit<Toast, 'id'>) => string;
   dismissToast: (id: string) => void;
@@ -75,6 +80,9 @@ export const useAppStore = create<AppState>((set) => ({
   feedbackModalOpen: false,
   openFeedback: () => set({ feedbackModalOpen: true }),
   closeFeedback: () => set({ feedbackModalOpen: false }),
+
+  syncRevision: 0,
+  bumpSyncRevision: () => set((state) => ({ syncRevision: state.syncRevision + 1 })),
 
   toasts: [],
   pushToast: (t) => {

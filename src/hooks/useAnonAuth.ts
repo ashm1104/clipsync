@@ -30,36 +30,44 @@ export function useAnonAuth() {
 
     const { data: sub } = supabase.auth.onAuthStateChange(async (event, session) => {
       const isAnon = sessionIsAnonymous(session?.user ?? null);
+      const wasAnon = lastAnonRef.current;
       setSession(session?.user.id ?? null, isAnon);
+      lastAnonRef.current = isAnon;
 
-      // Transition from anonymous → real account — run migration once.
-      if (
-        event === 'SIGNED_IN' &&
-        lastAnonRef.current &&
-        !isAnon &&
-        session?.user.id
-      ) {
+      // Run migration on EVERY SIGNED_IN where the user is real. Covers:
+      //  - anon → click sign in (transition case)
+      //  - magic link landing on a fresh tab where ensureAnonSession
+      //    already saw a real session and we never had a 'transition'
+      // The function itself is no-op if local clips are empty, so safe
+      // to call repeatedly.
+      if (event === 'SIGNED_IN' && !isAnon && session?.user.id) {
         try {
           const count = await migrateLocalToAccount(session.user.id);
-          closeSignIn();
-          pushToast({
-            kind: 'success',
-            title: 'Your clipboard is safe',
-            body: count > 0 ? `${count} items saved to your account.` : 'Signed in.',
-          });
-          // Personal Sync may have already fetched its empty list before
-          // the migration inserted rows — tell it to refresh.
+          // Bump the global revision so usePersonalClipboard tears down
+          // and re-runs cleanly — no race with the in-flight initial fetch.
+          useAppStore.getState().bumpSyncRevision();
+          // Keep the legacy event for any other listener.
           window.dispatchEvent(new CustomEvent('pastio.personal.refresh'));
-          trackEvent(Events.signinCompleted, { migrated: count });
+          // Toast + tracking only on the true anon→auth transition.
+          if (wasAnon) {
+            closeSignIn();
+            pushToast({
+              kind: 'success',
+              title: 'Your clipboard is safe',
+              body: count > 0 ? `${count} items saved to your account.` : 'Signed in.',
+            });
+            trackEvent(Events.signinCompleted, { migrated: count });
+          }
         } catch {
-          pushToast({
-            kind: 'error',
-            title: 'Signed in, but migration failed',
-            body: 'Your anonymous clips stayed on this device.',
-          });
+          if (wasAnon) {
+            pushToast({
+              kind: 'error',
+              title: 'Signed in, but migration failed',
+              body: 'Your anonymous clips stayed on this device.',
+            });
+          }
         }
       }
-      lastAnonRef.current = isAnon;
     });
 
     return () => {

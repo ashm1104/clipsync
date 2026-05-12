@@ -13,8 +13,38 @@ export default function RichClip({ clip, onDelete }: { clip: Clip; onDelete?: ()
   const pushToast = useAppStore((s) => s.pushToast);
   const copy = async () => {
     if (!clip.content) return;
-    await navigator.clipboard.writeText(clip.content);
-    pushToast({ kind: 'success', title: 'Copied HTML to clipboard' });
+    const html = clip.content;
+    // Render the HTML once to extract a clean text representation
+    // (so plain-text destinations get readable text, not tags).
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    const text = tmp.innerText || tmp.textContent || '';
+
+    try {
+      // Modern multi-MIME clipboard. Word/Notion/Gmail get the
+      // formatted version; plain editors get plain text. Browser
+      // picks the right representation per paste destination.
+      if (typeof ClipboardItem !== 'undefined' && navigator.clipboard.write) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/html': new Blob([html], { type: 'text/html' }),
+            'text/plain': new Blob([text], { type: 'text/plain' }),
+          }),
+        ]);
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      pushToast({ kind: 'success', title: 'Copied to clipboard' });
+    } catch {
+      // Some browsers block ClipboardItem outside user gestures or in
+      // insecure contexts — fall back to plain text.
+      try {
+        await navigator.clipboard.writeText(text);
+        pushToast({ kind: 'success', title: 'Copied as plain text' });
+      } catch {
+        pushToast({ kind: 'error', title: 'Could not copy' });
+      }
+    }
   };
 
   return (
@@ -36,7 +66,7 @@ export default function RichClip({ clip, onDelete }: { clip: Clip; onDelete?: ()
             className="rounded-btn px-2 py-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
             style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)' }}
           >
-            Copy HTML
+            Copy
           </button>
           {onDelete && (
             <button
