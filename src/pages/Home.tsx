@@ -75,7 +75,7 @@ function AnonHome() {
 
   return (
     <main
-      className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
+      className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[minmax(0,1fr)_268px] md:px-[22px] md:py-[20px]"
     >
       <MobileTabs
         tabs={[{ key: 'clipboard', label: 'Clipboard' }, { key: 'room', label: 'Room' }]}
@@ -282,7 +282,7 @@ function LoggedInHome() {
 
   return (
     <main
-      className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[1fr_268px] md:px-[22px] md:py-[20px]"
+      className="mx-auto grid w-full max-w-[960px] grid-cols-1 gap-[18px] px-4 py-[18px] md:grid-cols-[minmax(0,1fr)_268px] md:px-[22px] md:py-[20px]"
     >
       <MobileTabs
         tabs={[
