@@ -181,16 +181,16 @@ function AnonHome() {
             </p>
             {isAnon && (
               <p className="mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                Or{' '}
+                Prefer to skip codes?{' '}
                 <button
                   type="button"
                   onClick={openSignIn}
                   className="font-medium underline underline-offset-2"
                   style={{ color: 'var(--text-secondary)' }}
                 >
-                  sign in free
+                  Sign in free
                 </button>{' '}
-                to skip codes — paste on one signed-in device, get it on the others.
+                — paste on one signed-in device, get it on the others.
               </p>
             )}
             <button
@@ -256,13 +256,13 @@ function JoinRoomCard() {
           onChange={(e) => setCode(e.target.value.replace(/[^a-z0-9-]/gi, ''))}
           placeholder="code or custom"
           maxLength={50}
-          className="flex-1 rounded-btn bg-bg-surface px-2 py-1.5 font-mono text-sm outline-none placeholder:text-text-tertiary"
+          className="min-w-0 flex-1 rounded-btn bg-bg-surface px-2 py-1.5 font-mono text-sm outline-none placeholder:text-text-tertiary"
           style={{ border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)', letterSpacing: '0.05em' }}
         />
         <button
           type="submit"
           disabled={code.trim().length < 3}
-          className="rounded-btn px-3 py-1.5 text-sm transition-colors disabled:opacity-40"
+          className="shrink-0 rounded-btn px-3 py-1.5 text-sm transition-colors disabled:opacity-40"
           style={{ background: 'var(--bg-surface)', border: '0.5px solid var(--border-subtle)', color: 'var(--text-primary)' }}
         >
           Join
