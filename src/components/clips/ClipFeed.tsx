@@ -19,7 +19,22 @@ type Props = {
   // render in a ghost-blurred state with an Upgrade chip. Used for the
   // 7-day-history Pro gate on free Personal Sync.
   blurOlderThan?: number | null;
+  // When set, clips show a small "expires in Xh Ym" hint on cards that are
+  // within 4h of being deleted by the retention cron. Lifetime is calculated
+  // as created_at + retentionMs.
+  retentionMs?: number | null;
 };
+
+const FOUR_HOURS = 4 * 60 * 60 * 1000;
+
+function formatExpiresIn(ms: number): string {
+  const minutes = Math.max(0, Math.round(ms / 60_000));
+  if (minutes < 1) return 'expires now';
+  if (minutes < 60) return `expires in ${minutes}m`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `expires in ${h}h ${m}m`;
+}
 
 function renderClip(clip: Clip, onDelete?: () => void) {
   switch (clip.type) {
@@ -43,10 +58,12 @@ function ClipRow({
   clip,
   source,
   blurred,
+  expiresInMs,
 }: {
   clip: Clip;
   source: 'clips' | 'personal_clips';
   blurred: boolean;
+  expiresInMs: number | null;
 }) {
   const myUserId = useAppStore((s) => s.userId);
   const pushToast = useAppStore((s) => s.pushToast);
@@ -74,6 +91,14 @@ function ClipRow({
       >
         {renderClip(clip, canDelete && !blurred ? handleDelete : undefined)}
       </div>
+      {!blurred && expiresInMs != null && expiresInMs <= FOUR_HOURS && (
+        <div
+          className="mt-1 px-1 text-[11px]"
+          style={{ color: 'var(--amber-text, #633806)' }}
+        >
+          ⏳ {formatExpiresIn(expiresInMs)}
+        </div>
+      )}
       {blurred && (
         <button
           type="button"
@@ -96,7 +121,13 @@ function ClipRow({
   );
 }
 
-export default function ClipFeed({ clips, emptyLabel, source = 'clips', blurOlderThan = null }: Props) {
+export default function ClipFeed({
+  clips,
+  emptyLabel,
+  source = 'clips',
+  blurOlderThan = null,
+  retentionMs = null,
+}: Props) {
   if (!clips.length) {
     return (
       <div
@@ -107,12 +138,25 @@ export default function ClipFeed({ clips, emptyLabel, source = 'clips', blurOlde
       </div>
     );
   }
+  const now = Date.now();
   return (
     <div className="flex flex-col gap-3">
       {clips.map((c) => {
         const blurred =
           blurOlderThan != null && new Date(c.created_at).getTime() < blurOlderThan;
-        return <ClipRow key={c.id} clip={c} source={source} blurred={blurred} />;
+        const expiresInMs =
+          retentionMs != null
+            ? new Date(c.created_at).getTime() + retentionMs - now
+            : null;
+        return (
+          <ClipRow
+            key={c.id}
+            clip={c}
+            source={source}
+            blurred={blurred}
+            expiresInMs={expiresInMs}
+          />
+        );
       })}
     </div>
   );

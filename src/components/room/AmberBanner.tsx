@@ -14,7 +14,7 @@ export default function AmberBanner({ expiresAtMs }: Props) {
 
   return (
     <div
-      className="flex flex-col gap-3 rounded-card p-4 sm:flex-row sm:items-center sm:justify-between"
+      className="rounded-card p-4"
       style={{
         background: 'var(--amber-light)',
         border: '0.5px solid var(--amber-border)',
@@ -27,7 +27,7 @@ export default function AmberBanner({ expiresAtMs }: Props) {
         <button
           type="button"
           onClick={openSignIn}
-          className="font-medium underline underline-offset-2"
+          className="font-semibold underline underline-offset-2"
         >
           Sign in free
         </button>{' '}
@@ -41,16 +41,6 @@ export default function AmberBanner({ expiresAtMs }: Props) {
         </button>
         .
       </div>
-      <button
-        type="button"
-        onClick={openSignIn}
-        className="shrink-0 rounded-btn px-4 py-[7px] text-sm font-medium text-white transition-colors"
-        style={{ background: '#3B6D11' }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = '#27500A')}
-        onMouseLeave={(e) => (e.currentTarget.style.background = '#3B6D11')}
-      >
-        Save my clipboard →
-      </button>
     </div>
   );
 }

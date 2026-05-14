@@ -179,6 +179,20 @@ function AnonHome() {
             <p className="mt-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
               Paste anything on the Clipboard tab — we'll spin up a room with a code and QR you can share.
             </p>
+            {isAnon && (
+              <p className="mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                Or{' '}
+                <button
+                  type="button"
+                  onClick={openSignIn}
+                  className="font-medium underline underline-offset-2"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  sign in free
+                </button>{' '}
+                to skip codes — paste on one signed-in device, get it on the others.
+              </p>
+            )}
             <button
               type="button"
               onClick={() => setMobileTab('clipboard')}
@@ -323,7 +337,21 @@ function LoggedInHome() {
       <section className={`${showOn('clipboard')} flex-col gap-[18px] md:col-start-1 md:row-start-2`}>
         {clips.length > 0 && (
           <div className="flex items-center justify-between text-xs" style={{ color: 'var(--text-tertiary)' }}>
-            <span>{clips.length} clip{clips.length === 1 ? '' : 's'}</span>
+            <span>
+              {clips.length} clip{clips.length === 1 ? '' : 's'}
+              {plan !== 'pro' && (
+                <span className="ml-2">
+                  · kept for 24 hours ·{' '}
+                  <button
+                    type="button"
+                    onClick={() => useAppStore.getState().openUpgrade('history_30d')}
+                    className="underline underline-offset-2"
+                  >
+                    Pro keeps 7 days
+                  </button>
+                </span>
+              )}
+            </span>
             <button
               type="button"
               onClick={clearAllPersonal}
@@ -336,7 +364,7 @@ function LoggedInHome() {
         <ClipFeed
           clips={clips}
           source="personal_clips"
-          blurOlderThan={plan === 'pro' ? null : Date.now() - 24 * 60 * 60 * 1000}
+          retentionMs={plan === 'pro' ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000}
         />
       </section>
     </main>
