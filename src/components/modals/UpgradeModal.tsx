@@ -32,8 +32,8 @@ const REASON_COPY: Record<UpgradeReason, { title: string; body: string }> = {
     body: "Free keeps clips for 24 hours. Pro keeps every clip available for the week.",
   },
   third_device: {
-    title: 'Pro syncs unlimited devices',
-    body: 'Free accounts sync up to 2 devices. Upgrade for the whole setup.',
+    title: 'You already have 2 active devices',
+    body: 'Free accounts sync 2 devices at a time. This new one stays paused unless you replace one — or upgrade to Pro for unlimited.',
   },
   default: {
     title: 'Upgrade to Pro',

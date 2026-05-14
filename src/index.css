@@ -64,6 +64,11 @@ body {
   50% { opacity: 0.4; }
 }
 
+@keyframes pastio-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .sync-dot-live {
   width: 6px;
   height: 6px;

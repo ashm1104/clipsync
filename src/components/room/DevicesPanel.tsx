@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAppStore } from '../../stores/appStore';
 import { getCurrentSessionId } from '../../hooks/useDeviceRegistration';
@@ -31,6 +31,7 @@ export default function DevicesPanel() {
   const pushToast = useAppStore((s) => s.pushToast);
   const [rows, setRows] = useState<DeviceRow[]>([]);
   const [hereSessionId, setHereSessionId] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,6 +42,24 @@ export default function DevicesPanel() {
       cancelled = true;
     };
   }, [userId]);
+
+  const fetchDevices = useCallback(async () => {
+    if (!userId) return;
+    const { data } = await supabase
+      .from('devices')
+      .select('id,session_id,name,last_seen_at,created_at,is_active')
+      .eq('user_id', userId)
+      .order('last_seen_at', { ascending: false });
+    setRows((data ?? []) as DeviceRow[]);
+  }, [userId]);
+
+  const handleRefresh = async () => {
+    if (!userId || refreshing) return;
+    setRefreshing(true);
+    await fetchDevices();
+    // Brief spin so the click feels acknowledged even on instant fetches.
+    setTimeout(() => setRefreshing(false), 400);
+  };
 
   useEffect(() => {
     if (!userId) return;
@@ -149,14 +168,42 @@ export default function DevicesPanel() {
     >
       <div className="flex items-center justify-between">
         <span className="text-xs uppercase tracking-wider text-text-tertiary">Devices</span>
-        {isFree && (
-          <span
-            className="rounded-pill px-1.5 py-0.5 text-[10px]"
-            style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}
+        <div className="flex items-center gap-1.5">
+          {isFree && (
+            <span
+              className="rounded-pill px-1.5 py-0.5 text-[10px]"
+              style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}
+            >
+              {activeRows.length}/{FREE_SLOTS} slots
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleRefresh}
+            disabled={refreshing || !userId}
+            aria-label="Refresh devices"
+            title="Refresh"
+            className="flex h-[22px] w-[22px] items-center justify-center rounded-btn text-text-tertiary transition-colors hover:text-text-primary disabled:opacity-50"
+            style={{ background: 'transparent' }}
           >
-            {activeRows.length}/{FREE_SLOTS} slots
-          </span>
-        )}
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{
+                animation: refreshing ? 'pastio-spin 0.6s linear' : 'none',
+              }}
+            >
+              <path d="M21 12a9 9 0 1 1-3-6.7" />
+              <path d="M21 4v5h-5" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {rows.length === 0 ? (
@@ -217,10 +264,14 @@ export default function DevicesPanel() {
                     onClick={() => remove(d.id, isCurrent)}
                     aria-label="Remove device"
                     title={isCurrent ? 'Sign out from the navbar' : 'Remove from list'}
-                    className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
-                    style={{ color: 'var(--text-tertiary)' }}
+                    className="rounded-btn px-2 py-0.5 text-[11px] opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                    style={{
+                      background: 'var(--bg-surface)',
+                      border: '0.5px solid var(--border-subtle)',
+                      color: 'var(--text-secondary)',
+                    }}
                   >
-                    ×
+                    Remove
                   </button>
                 </div>
               </li>
