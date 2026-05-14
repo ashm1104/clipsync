@@ -264,14 +264,10 @@ export default function DevicesPanel() {
                     onClick={() => remove(d.id, isCurrent)}
                     aria-label="Remove device"
                     title={isCurrent ? 'Sign out from the navbar' : 'Remove from list'}
-                    className="rounded-btn px-2 py-0.5 text-[11px] opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
-                    style={{
-                      background: 'var(--bg-surface)',
-                      border: '0.5px solid var(--border-subtle)',
-                      color: 'var(--text-secondary)',
-                    }}
+                    className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                    style={{ color: 'var(--text-tertiary)' }}
                   >
-                    Remove
+                    ×
                   </button>
                 </div>
               </li>
