@@ -14,10 +14,10 @@ export const MAX_IMAGE_SIZE_PRO = 50 * 1024 * 1024;
 export async function uploadImageToRoom(
   file: File,
   roomId: string,
-  onProgress?: (pct: number) => void
+  onProgress?: (pct: number) => void,
+  maxBytes: number = MAX_IMAGE_SIZE_FREE
 ): Promise<{ path: string; size: number }> {
-  // Phase 2: no Pro-tier detection yet; enforce free cap for all anon users.
-  if (file.size > MAX_IMAGE_SIZE_FREE) {
+  if (file.size > maxBytes) {
     throw new Error('FILE_TOO_LARGE');
   }
 

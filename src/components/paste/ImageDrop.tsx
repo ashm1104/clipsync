@@ -61,13 +61,15 @@ export default function ImageDrop({ onImage, onFile }: Props) {
         await onImage(file, setProgress);
       } catch (err) {
         setError(err instanceof Error && err.message === 'FILE_TOO_LARGE'
-          ? 'That image is over the 10MB free cap.'
+          ? plan === 'pro'
+            ? 'That image is over the 50MB cap.'
+            : 'That image is over the 10MB free cap.'
           : 'Upload failed. Try again.');
       } finally {
         setProgress(null);
       }
     },
-    [onImage]
+    [onImage, plan]
   );
 
   const handleDrop = useCallback(

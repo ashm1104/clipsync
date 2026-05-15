@@ -2,7 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAppStore } from '../stores/appStore';
 import { detectType, detectLanguage } from '../lib/contentDetector';
-import { uploadImageToRoom, uploadFileToRoom } from '../lib/storage';
+import {
+  uploadImageToRoom,
+  uploadFileToRoom,
+  MAX_IMAGE_SIZE_FREE,
+  MAX_IMAGE_SIZE_PRO,
+} from '../lib/storage';
 import { fetchOg } from '../lib/og';
 import { Events, trackEvent } from '../lib/analytics';
 import type { Clip } from './useRoom';
@@ -126,7 +131,9 @@ export function usePersonalClipboard() {
       const uid = useAppStore.getState().userId;
       if (!uid) return;
       // Reuse storage helper — bucket path scoped by user id instead of room id.
-      const { path, size } = await uploadImageToRoom(file, `user-${uid}`, onProgress);
+      const plan = useAppStore.getState().plan;
+      const cap = plan === 'pro' ? MAX_IMAGE_SIZE_PRO : MAX_IMAGE_SIZE_FREE;
+      const { path, size } = await uploadImageToRoom(file, `user-${uid}`, onProgress, cap);
       const { error } = await supabase.from('personal_clips').insert({
         user_id: uid,
         type: 'image',

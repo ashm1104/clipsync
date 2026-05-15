@@ -4,7 +4,12 @@ import { createUniqueSlug } from '../lib/slug';
 import { detectType, detectLanguage, type ClipType } from '../lib/contentDetector';
 import { setCurrentRoomSlug, addLocalClip } from '../lib/localStorage';
 import { useAppStore } from '../stores/appStore';
-import { uploadImageToRoom, uploadFileToRoom } from '../lib/storage';
+import {
+  uploadImageToRoom,
+  uploadFileToRoom,
+  MAX_IMAGE_SIZE_FREE,
+  MAX_IMAGE_SIZE_PRO,
+} from '../lib/storage';
 import { fetchOg } from '../lib/og';
 import { Events, trackEvent } from '../lib/analytics';
 
@@ -222,7 +227,9 @@ export function useRoom(initialSlug?: string) {
         }
       }
 
-      const { path, size } = await uploadImageToRoom(file, r.id, onProgress);
+      const plan = useAppStore.getState().plan;
+      const cap = plan === 'pro' ? MAX_IMAGE_SIZE_PRO : MAX_IMAGE_SIZE_FREE;
+      const { path, size } = await uploadImageToRoom(file, r.id, onProgress, cap);
       const uid = useAppStore.getState().userId;
       const { data, error } = await supabase
         .from('clips')
