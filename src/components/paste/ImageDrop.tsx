@@ -178,36 +178,46 @@ export default function ImageDrop({ onImage, onFile }: Props) {
             />
           </div>
         </div>
+      ) : plan === 'pro' ? (
+        <>
+          <div className="text-sm">Drop a file or click to browse</div>
+          <div className="mt-1 text-xs text-text-tertiary">
+            Images, PDFs, ZIPs, CSVs and more · up to 50MB
+          </div>
+        </>
       ) : (
         <>
           <div className="text-sm">Drop an image or click to browse</div>
           <div className="mt-1 text-xs text-text-tertiary">PNG, JPG, WebP, GIF · up to 10MB</div>
-          {plan !== 'pro' && (
-            <div className="mt-2 text-[11px]" style={{ color: 'var(--amber-text, #633806)' }}>
-              💎 PDFs, ZIPs, CSVs and more files —{' '}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openUpgrade('file_upload');
-                }}
-                className="underline underline-offset-2"
-              >
-                Pro feature
-              </button>
-            </div>
-          )}
+          <div className="mt-2 text-[11px]" style={{ color: 'var(--amber-text, #633806)' }}>
+            💎 PDFs, ZIPs, CSVs and more files —{' '}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                openUpgrade('file_upload');
+              }}
+              className="underline underline-offset-2"
+            >
+              Pro feature
+            </button>
+          </div>
         </>
       )}
       {error && <div className="mt-2 text-xs" style={{ color: 'var(--red-text)' }}>{error}</div>}
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept={plan === 'pro' ? undefined : 'image/*'}
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];
-          if (f) handleFile(f);
+          if (f) {
+            // Route by actual MIME, not by which input opened the picker:
+            // images go through sendImage, everything else through sendFile.
+            if (f.type.startsWith('image/')) handleFile(f);
+            else handleNonImageFile(f);
+          }
           e.target.value = '';
         }}
         onClick={(e) => e.stopPropagation()}
